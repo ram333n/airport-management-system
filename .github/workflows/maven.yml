@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven and JaCoCO test coverage
+name: Java CI with Maven and JaCoCo test coverage
 
 on:
   push:
@@ -29,6 +29,20 @@ jobs:
         cache: maven
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+      
+    - name: Add coverage to PR
+      id: jacoco
+      uses: madrapps/jacoco-report@v1.3
+      with:
+        paths: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
+        token: ${{ secrets.REPO_COMMIT_TOKEN }}
+        min-coverage-overall: 50
+        min-coverage-changed-files: 10
+        
+    - name: Log coverage percentage
+      run: |
+        echo "coverage overall = ${{ steps.jacoco.outputs.coverage-overall }}"
+        echo "coverage changed files = ${{ steps.jacoco.outputs.coverage-changed-files }}"
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
