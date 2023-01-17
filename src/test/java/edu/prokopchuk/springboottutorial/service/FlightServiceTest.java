@@ -1,22 +1,24 @@
 package edu.prokopchuk.springboottutorial.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.prokopchuk.springboottutorial.dao.FlightDao;
 import edu.prokopchuk.springboottutorial.model.Flight;
+import edu.prokopchuk.springboottutorial.repository.FlightRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class FlightServiceTest {
-  private static FlightDao flightDao;
-  private static FlightService flightService;
+  @Mock
+  private static FlightRepository flightRepository;
 
-  @BeforeAll
-  static void setUp() {
-    flightDao = new FlightDao();
-    flightService = new FlightService(flightDao);
-  }
+  @InjectMocks
+  private static FlightService flightService;
 
   @Test
   void createFlightWorksProperly() {

@@ -1,23 +1,24 @@
 package edu.prokopchuk.springboottutorial.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.prokopchuk.springboottutorial.dao.CrewDao;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
+import edu.prokopchuk.springboottutorial.repository.CrewRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
+@ExtendWith(MockitoExtension.class)
 class CrewServiceTest {
-  private static CrewDao crewDao;
-  private static CrewService crewService;
+  @MockBean
+  private static CrewRepository crewRepository;
 
-  @BeforeAll
-  static void setUp() {
-    crewDao = new CrewDao();
-    crewService = new CrewService(crewDao);
-  }
+  @InjectMocks
+  private static CrewService crewService;
 
   @Test
   void createCrewMemberWorksProperly() {

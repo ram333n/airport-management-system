@@ -1,22 +1,24 @@
 package edu.prokopchuk.springboottutorial.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import edu.prokopchuk.springboottutorial.dao.UserDao;
 import edu.prokopchuk.springboottutorial.model.User;
+import edu.prokopchuk.springboottutorial.repository.UserRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
-  private static UserDao userDao;
-  private static UserService userService;
+  @Mock
+  private static UserRepository userRepository;
 
-  @BeforeAll
-  static void setUp() {
-    userDao = new UserDao();
-    userService = new UserService(userDao);
-  }
+  @InjectMocks
+  private static UserService userService;
 
   @Test
   void createUserWorksProperly() {
