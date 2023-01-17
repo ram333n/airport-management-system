@@ -1,18 +1,18 @@
 package edu.prokopchuk.springboottutorial.service;
 
-import edu.prokopchuk.springboottutorial.dao.UserDao;
 import edu.prokopchuk.springboottutorial.model.User;
+import edu.prokopchuk.springboottutorial.repository.UserRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-  private UserDao userDao;
+  private UserRepository userRepository;
 
   @Autowired
-  public UserService(UserDao userDao) {
-    this.userDao = userDao;
+  public UserService(UserRepository userRepository) {
+    this.userRepository = userRepository;
   }
 
   public User createUser(User user) {

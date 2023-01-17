@@ -1,18 +1,18 @@
 package edu.prokopchuk.springboottutorial.service;
 
-import edu.prokopchuk.springboottutorial.dao.FlightDao;
 import edu.prokopchuk.springboottutorial.model.Flight;
+import edu.prokopchuk.springboottutorial.repository.FlightRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class FlightService {
-  private FlightDao flightDao;
+  private FlightRepository flightRepository;
 
   @Autowired
-  public FlightService(FlightDao flightDao) {
-    this.flightDao = flightDao;
+  public FlightService(FlightRepository flightRepository) {
+    this.flightRepository = flightRepository;
   }
 
   public Flight createFlight(Flight flight) {
