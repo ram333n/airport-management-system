@@ -2,17 +2,20 @@ package edu.prokopchuk.springboottutorial.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import edu.prokopchuk.springboottutorial.dao.FlightDao;
 import edu.prokopchuk.springboottutorial.model.Flight;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class FlightServiceTest {
+  private static FlightDao flightDao;
   private static FlightService flightService;
 
   @BeforeAll
   static void setUp() {
-    flightService = new FlightService();
+    flightDao = new FlightDao();
+    flightService = new FlightService(flightDao);
   }
 
   @Test

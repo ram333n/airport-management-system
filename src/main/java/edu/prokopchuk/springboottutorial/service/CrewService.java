@@ -1,12 +1,19 @@
 package edu.prokopchuk.springboottutorial.service;
 
+import edu.prokopchuk.springboottutorial.dao.CrewDao;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CrewService {
-  //TODO: add repository
+  private CrewDao crewDao;
+
+  @Autowired
+  public CrewService(CrewDao crewDao) {
+    this.crewDao = crewDao;
+  }
 
   public CrewMember createCrewMember(CrewMember crewMember) {
     return new CrewMember();

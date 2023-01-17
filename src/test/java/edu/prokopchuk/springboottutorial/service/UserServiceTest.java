@@ -2,17 +2,20 @@ package edu.prokopchuk.springboottutorial.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import edu.prokopchuk.springboottutorial.dao.UserDao;
 import edu.prokopchuk.springboottutorial.model.User;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class UserServiceTest {
+  private static UserDao userDao;
   private static UserService userService;
 
   @BeforeAll
   static void setUp() {
-    userService = new UserService();
+    userDao = new UserDao();
+    userService = new UserService(userDao);
   }
 
   @Test

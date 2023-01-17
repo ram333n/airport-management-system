@@ -1,12 +1,19 @@
 package edu.prokopchuk.springboottutorial.service;
 
+import edu.prokopchuk.springboottutorial.dao.UserDao;
 import edu.prokopchuk.springboottutorial.model.User;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-  //TODO: add repository
+  private UserDao userDao;
+
+  @Autowired
+  public UserService(UserDao userDao) {
+    this.userDao = userDao;
+  }
 
   public User createUser(User user) {
     return new User();

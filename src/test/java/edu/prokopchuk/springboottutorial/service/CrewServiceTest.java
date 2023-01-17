@@ -2,6 +2,7 @@ package edu.prokopchuk.springboottutorial.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import edu.prokopchuk.springboottutorial.dao.CrewDao;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,11 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class CrewServiceTest {
+  private static CrewDao crewDao;
   private static CrewService crewService;
 
   @BeforeAll
   static void setUp() {
-    crewService = new CrewService();
+    crewDao = new CrewDao();
+    crewService = new CrewService(crewDao);
   }
 
   @Test
