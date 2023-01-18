@@ -47,7 +47,7 @@ public class Flight {
 
   @ManyToMany(
       mappedBy = "flights",
-      cascade = CascadeType.REMOVE
+      cascade = CascadeType.ALL
   )
   private Set<CrewMember> crew = new HashSet<>();
 }

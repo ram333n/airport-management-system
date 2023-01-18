@@ -12,16 +12,20 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.Hibernate;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = "flights")
 @Entity
 @Table(name = "crew_members")
 public class CrewMember {
@@ -48,11 +52,30 @@ public class CrewMember {
   @Enumerated(value = EnumType.STRING)
   private Position position;
 
-  @ManyToMany(cascade = CascadeType.REMOVE)
+  @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
       name = "flights_crew",
       joinColumns = @JoinColumn(name = "pass_number"),
       inverseJoinColumns = @JoinColumn(name = "flight_number")
   )
   private Set<Flight> flights = new HashSet<>();
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+      return false;
+    }
+
+    CrewMember that = (CrewMember) o;
+    return Objects.equals(passNumber, that.passNumber);
+  }
+
+  @Override
+  public int hashCode() {
+    return getClass().hashCode();
+  }
 }
