@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CrewService {
-  private CrewRepository crewRepository;
+  private final CrewRepository crewRepository;
 
   @Autowired
   public CrewService(CrewRepository crewRepository) {
