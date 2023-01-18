@@ -16,18 +16,18 @@ public class CrewService {
   }
 
   public CrewMember createCrewMember(CrewMember crewMember) {
-    return new CrewMember();
+    return crewRepository.save(crewMember);
   }
 
   public Optional<CrewMember> getCrewMember(String passNumber) {
-    return Optional.of(new CrewMember());
+    return crewRepository.findById(passNumber);
   }
 
-  public CrewMember updateCrewMember(String passNumber, CrewMember crewMember) {
-    return new CrewMember();
+  public CrewMember updateCrewMember(CrewMember crewMember) {
+    return crewRepository.save(crewMember);
   }
 
   public boolean deleteCrewMember(String passNumber) {
-    return true;
+    return crewRepository.deleteByPassNumber(passNumber) > 0L;
   }
 }

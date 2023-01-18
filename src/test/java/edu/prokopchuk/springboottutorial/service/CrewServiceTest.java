@@ -34,7 +34,7 @@ class CrewServiceTest {
 
   @Test
   void updateCrewMemberWorksProperly() {
-    CrewMember actual = crewService.updateCrewMember("test", new CrewMember());
+    CrewMember actual = crewService.updateCrewMember(new CrewMember());
     assertNotNull(actual);
   }
 
