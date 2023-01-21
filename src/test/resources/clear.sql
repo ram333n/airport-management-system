@@ -1,3 +1,3 @@
-TRUNCATE TABLE flights_crew;
-TRUNCATE TABLE flights;
-TRUNCATE TABLE crew_members;
+DELETE FROM flights_crew;
+DELETE FROM flights;
+DELETE FROM crew_members;

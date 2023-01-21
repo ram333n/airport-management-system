@@ -1,6 +1,7 @@
 package edu.prokopchuk.springboottutorial.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -8,7 +9,6 @@ import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.enums.Position;
 import edu.prokopchuk.springboottutorial.repository.CrewRepository;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -55,19 +55,43 @@ class CrewServiceTest {
 
   @Test
   void getCrewMemberWorksProperly() {
-    Optional<CrewMember> actual = crewService.getCrewMember("TEST-123");
-    assertTrue(actual.isEmpty());
+    Optional<CrewMember> actual1 = crewService.getCrewMember("TEST-123");
+    Optional<CrewMember> actual2 = crewService.getCrewMember("PLT-123");
+
+    assertTrue(actual1.isEmpty());
+    assertTrue(actual2.isPresent());
+    assertEquals("Roman", actual2.get().getName());
   }
-//
-//  @Test
-//  void updateCrewMemberWorksProperly() {
-//    CrewMember actual = crewService.updateCrewMember(new CrewMember());
-//    assertNotNull(actual);
-//  }
-//
-//  @Test
-//  void deleteCrewMemberWorksProperly() {
-//    boolean actual = crewService.deleteCrewMember("test");
-//    assertTrue(actual);
-//  }
+
+  @Test
+  void updateCrewMemberWorksProperly() {
+    String passNumber = "PLT-123";
+    CrewMember toUpdate = CrewMember.builder()
+        .passNumber(passNumber)
+        .name("Ruslan")
+        .surname("Test")
+        .position(Position.OPERATOR)
+        .build();
+
+    crewService.updateCrewMember(toUpdate);
+    Optional<CrewMember> actualOptional = crewService.getCrewMember(passNumber);
+
+    assertTrue(actualOptional.isPresent());
+    assertEquals("PLT-123", actualOptional.get().getPassNumber());
+    assertEquals("Ruslan", actualOptional.get().getName());
+    assertEquals("Test", actualOptional.get().getSurname());
+    assertEquals(Position.OPERATOR, actualOptional.get().getPosition());
+  }
+
+  @Test
+  void deleteCrewMemberWorksProperly() {
+    String realPassNumber = "PLT-123";
+    String fakePassNumber = "TEST-123";
+
+    boolean isRealRemoved = crewService.deleteCrewMember(realPassNumber);
+    boolean isFakeRemoved = crewService.deleteCrewMember(fakePassNumber);
+
+    assertTrue(isRealRemoved);
+    assertFalse(isFakeRemoved);
+  }
 }

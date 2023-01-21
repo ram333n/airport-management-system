@@ -1,7 +1,6 @@
 package edu.prokopchuk.springboottutorial.model;
 
 import edu.prokopchuk.springboottutorial.model.enums.Position;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,7 +25,7 @@ import org.hibernate.Hibernate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = "flights")
+@ToString
 @Entity
 @Table(name = "crew_members")
 public class CrewMember {
@@ -52,13 +52,20 @@ public class CrewMember {
   @Enumerated(value = EnumType.STRING)
   private Position position;
 
-  @ManyToMany(cascade = CascadeType.ALL)
+  @ManyToMany
   @JoinTable(
       name = "flights_crew",
       joinColumns = @JoinColumn(name = "pass_number"),
       inverseJoinColumns = @JoinColumn(name = "flight_number")
   )
   private Set<Flight> flights = new HashSet<>();
+
+  @PreRemove
+  private void removeFlights() {
+    for (Flight flight : flights) {
+      flight.getCrew().remove(this);
+    }
+  }
 
   @Override
   public boolean equals(Object o) {
