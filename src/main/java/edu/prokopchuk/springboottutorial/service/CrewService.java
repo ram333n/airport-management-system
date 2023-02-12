@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CrewService {
+
   private final CrewRepository crewRepository;
 
   @Autowired
@@ -34,4 +35,5 @@ public class CrewService {
   public boolean deleteCrewMember(String passNumber) {
     return crewRepository.deleteByPassNumber(passNumber) > 0L;
   }
+
 }

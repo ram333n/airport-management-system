@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
+
   private final UserRepository userRepository;
 
   @Autowired
@@ -30,4 +31,5 @@ public class UserService {
   public boolean deleteUser(Long id) {
     return true;
   }
+
 }

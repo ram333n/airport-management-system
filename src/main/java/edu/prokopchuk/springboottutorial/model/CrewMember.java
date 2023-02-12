@@ -29,6 +29,7 @@ import org.hibernate.Hibernate;
 @Entity
 @Table(name = "crew_members")
 public class CrewMember {
+
   @Id
   @Column(name = "pass_number")
   private String passNumber;
@@ -85,4 +86,5 @@ public class CrewMember {
   public int hashCode() {
     return getClass().hashCode();
   }
+
 }

@@ -23,6 +23,7 @@ import org.hibernate.Hibernate;
 @Entity
 @Table(name = "flights")
 public class Flight {
+
   @Id
   @Column(name = "flight_number")
   private String flightNumber;
@@ -79,4 +80,5 @@ public class Flight {
   public int hashCode() {
     return getClass().hashCode();
   }
+
 }

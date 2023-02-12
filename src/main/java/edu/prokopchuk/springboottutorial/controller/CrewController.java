@@ -6,10 +6,12 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class CrewController {
+
   private final CrewService crewService;
 
   @Autowired
   public CrewController(CrewService crewService) {
     this.crewService = crewService;
   }
+
 }

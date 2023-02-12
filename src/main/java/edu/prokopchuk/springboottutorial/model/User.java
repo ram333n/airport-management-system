@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 public class User {
+
   @Id
   @Column(name = "email")
   private String email;
@@ -25,4 +26,5 @@ public class User {
   )
   @Enumerated(value = EnumType.STRING)
   private UserRole role;
+
 }
