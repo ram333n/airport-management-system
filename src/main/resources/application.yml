@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    username: ${DB_USERNAME:localdb}
+    url: ${DB_URL:jdbc:mysql://localhost:3306}
+    password: ${DB_PASSWORD:localdb}
+
+  jpa:
+    hibernate:
+      ddl-auto: update

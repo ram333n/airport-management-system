@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class FlightService {
+
   private final FlightRepository flightRepository;
 
   @Autowired
@@ -30,4 +31,5 @@ public class FlightService {
   public boolean deleteFlight(String flightNumber) {
     return true;
   }
+
 }
