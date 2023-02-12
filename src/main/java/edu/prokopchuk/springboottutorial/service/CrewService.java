@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-// TODO: learn about @Transactional annotation
-@Transactional
 public class CrewService {
   private final CrewRepository crewRepository;
 
@@ -18,6 +16,7 @@ public class CrewService {
     this.crewRepository = crewRepository;
   }
 
+  @Transactional
   public CrewMember createCrewMember(CrewMember crewMember) {
     return crewRepository.save(crewMember);
   }
@@ -26,10 +25,12 @@ public class CrewService {
     return crewRepository.findById(passNumber);
   }
 
+  @Transactional
   public CrewMember updateCrewMember(CrewMember crewMember) {
     return crewRepository.save(crewMember);
   }
 
+  @Transactional
   public boolean deleteCrewMember(String passNumber) {
     return crewRepository.deleteByPassNumber(passNumber) > 0L;
   }
