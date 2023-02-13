@@ -2,6 +2,7 @@ package edu.prokopchuk.springboottutorial.service;
 
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.repository.CrewRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,10 @@ public class CrewService {
 
   public Optional<CrewMember> getCrewMember(String passNumber) {
     return crewRepository.findById(passNumber);
+  }
+
+  public List<CrewMember> getAll() {
+    return crewRepository.findAll();
   }
 
   @Transactional
