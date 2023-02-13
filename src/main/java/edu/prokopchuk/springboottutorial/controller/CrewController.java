@@ -30,13 +30,10 @@ public class CrewController {
     return "crew";
   }
 
-  @ModelAttribute(name = "crewMember")
-  public CrewMember crewMember() {
-    return new CrewMember();
-  }
-
   @GetMapping("/crew/new")
-  public String showCreateForm() {
+  public String showCreateForm(Model model) {
+    model.addAttribute("crewMember", new CrewMember());
+
     return "crew-new-form";
   }
 
