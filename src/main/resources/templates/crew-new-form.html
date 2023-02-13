@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+
+  <title>Create crew member</title>
+</head>
+<body>
+  <header>
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Airport management system</a>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/home}">Crew</a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/flights}">Flights</a>
+            </li>
+          </ul>
+
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/logout}">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <h1 class="text-center mt-5">Create new crew member</h1>
+
+  <div class="container w-25 mt-5">
+    <form method="POST" th:action="@{/crew}" th:object="${crewMember}">
+      <div class="mb-3">
+        <label for="passNumberInput" class="form-label">Pass number</label>
+        <input th:field="*{passNumber}" type="text" class="form-control" id="passNumberInput">
+      </div>
+
+      <div class="mb-3">
+        <label for="nameInput" class="form-label">Name</label>
+        <input th:field="*{name}" type="text" class="form-control" id="nameInput">
+      </div>
+
+      <div class="mb-3">
+        <label for="surnameInput" class="form-label">Surname</label>
+        <input th:field="*{surname}" type="text" class="form-control" id="surnameInput">
+      </div>
+
+      <label for="positionInput" class="form-label">Position</label>
+      <select th:field="*{position}" class="form-select mb-3" id="positionInput">
+        <option th:value="'PILOT'" th:text="Pilot">Pilot</option>
+        <option th:value="'NAVIGATOR'" th:text="Navigator">Navigator</option>
+        <option th:value="'OPERATOR'" th:text="Operator">Operator</option>
+        <option th:value="'STEWARDESS'" th:text="Stewardess">Stewardess</option>
+      </select>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+</body>
+</html>
