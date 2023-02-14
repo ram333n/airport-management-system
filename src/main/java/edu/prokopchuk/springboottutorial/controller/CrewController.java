@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,7 +54,7 @@ public class CrewController {
     Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
 
     if (crewMember.isEmpty()) {
-      throw new IllegalArgumentException("Crew member with specific id found");
+      throw new IllegalArgumentException("Crew member with specific id not found");
     }
 
     model.addAttribute("crewMember", crewMember.get());
@@ -64,6 +65,17 @@ public class CrewController {
   @PutMapping("/crew")
   public String editCrewMember(@ModelAttribute("crewMember") CrewMember crewMember) {
     crewService.updateCrewMember(crewMember);
+
+    return "redirect:/crew";
+  }
+
+  @DeleteMapping("/crew/{pass-number}")
+  public String deleteCrewMember(@PathVariable("pass-number") String passNumber) {
+    boolean isDeleted = crewService.deleteCrewMember(passNumber);
+
+    if (!isDeleted) {
+      throw new IllegalArgumentException("Crew member with specific id not found");
+    }
 
     return "redirect:/crew";
   }

@@ -9,7 +9,6 @@
         rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
         crossorigin="anonymous">
-
   <title>Crew members</title>
 </head>
 
@@ -52,38 +51,39 @@
     <div class="row justify-content-center">
       <table class="table table-hover table-info table-striped">
         <thead class="table-dark">
-        <tr>
-          <th>Pass number</th>
-          <th>Name</th>
-          <th>Surname</th>
-          <th>Position</th>
-          <th>Actions</th>
-        </tr>
+          <tr>
+            <th class="c">Pass number</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Position</th>
+            <th>Actions</th>
+          </tr>
         </thead>
 
-        <tbody th:each="member : ${crew}">
-        <tr>
-          <td>
-            <a th:text="${member.passNumber}"
-               th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
-              passNumber
-            </a>
-          </td>
-          <td th:text="${member.name}">name</td>
-          <td th:text="${member.surname}">surname</td>
-          <td th:text="${member.position}">position</td>
-          <td>
-            <a th:href="@{/crew/edit/{pass-number}(pass-number=${member.passNumber})}"
-               class="btn btn-primary">
-              Edit
-            </a>
+        <tbody>
+          <tr th:each="member : ${crew}">
+            <td class="w-25">
+              <a th:text="${member.passNumber}"
+                 th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
+                passNumber
+              </a>
+            </td>
+            <td th:text="${member.name}">name</td>
+            <td th:text="${member.surname}">surname</td>
+            <td th:text="${member.position}">position</td>
+            <td>
+              <form th:method="delete"
+                    th:action="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
 
-            <a th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}"
-               class="btn btn-danger">
-              Delete
-            </a>
-          </td>
-        </tr>
+                <a th:href="@{/crew/edit/{pass-number}(pass-number=${member.passNumber})}"
+                   class="btn btn-primary">
+                  Edit
+                </a>
+
+                <input type="submit" class="btn btn-danger" value="Delete"/>
+              </form>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
