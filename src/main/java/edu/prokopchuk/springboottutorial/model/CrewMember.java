@@ -11,6 +11,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -33,25 +35,25 @@ import org.hibernate.Hibernate;
 public class CrewMember {
 
   @Id
-  @Column(name = "pass_number")
+  @Column(name = "pass_number", length = 10)
+  @NotBlank(message = "Pass number can't be blank")
+  @Size(min = 3, message = "Pass number must contain at least 3 characters")
+  @Size(max = 10, message = "Max length of pass number is 10 characters")
   private String passNumber;
 
-  @Column(
-      name = "name",
-      nullable = false
-  )
+  @Column(name = "name", nullable = false)
+  @NotBlank(message = "Name can't be blank")
+  @Size(min = 1, message = "Name must contain at least 1 character")
+  @Size(max = 255, message = "Max length of name is 255 characters")
   private String name;
 
-  @Column(
-      name = "surname",
-      nullable = false
-  )
+  @Column(name = "surname", nullable = false)
+  @NotBlank(message = "Surname can't be blank")
+  @Size(min = 1, message = "Name must contain at least 1 character")
+  @Size(max = 255, message = "Max length of surname is 255 characters")
   private String surname;
 
-  @Column(
-      name = "position",
-      nullable = false
-  )
+  @Column(name = "position", nullable = false)
   @Enumerated(value = EnumType.STRING)
   private Position position;
 
