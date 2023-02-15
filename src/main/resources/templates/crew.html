@@ -9,6 +9,25 @@
         rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
         crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
+  <script th:inline="javascript">
+    function deleteCrewMember(passNumber) {
+      const answer = confirm("Do you want to delete crew member?")
+
+      if (!answer) {
+        return
+      }
+
+      $.ajax({
+        url: '/crew/' + passNumber,
+        type: 'DELETE'
+      }).done((data) => {
+        window.location.reload()
+      })
+    }
+  </script>
+
   <title>Crew members</title>
 </head>
 
@@ -28,7 +47,7 @@
       <table class="table table-hover table-info table-striped">
         <thead class="table-dark">
           <tr>
-            <th class="c">Pass number</th>
+            <th>Pass number</th>
             <th>Name</th>
             <th>Surname</th>
             <th>Position</th>
@@ -48,16 +67,16 @@
             <td th:text="${member.surname}">surname</td>
             <td th:text="${member.position}">position</td>
             <td>
-              <form th:method="delete"
-                    th:action="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
+              <a th:href="@{/crew/edit/{pass-number}(pass-number=${member.passNumber})}"
+                 class="btn btn-primary">
+                Edit
+              </a>
 
-                <a th:href="@{/crew/edit/{pass-number}(pass-number=${member.passNumber})}"
-                   class="btn btn-primary">
-                  Edit
-                </a>
-
-                <input type="submit" class="btn btn-danger" value="Delete"/>
-              </form>
+              <button th:pass-num="${member.passNumber}"
+                      th:onclick="deleteCrewMember(this.getAttribute('pass-num'))"
+                      class="btn btn-danger">
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>

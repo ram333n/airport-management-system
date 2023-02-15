@@ -77,7 +77,7 @@ public class CrewController {
       throw new IllegalArgumentException("Crew member with specific id not found");
     }
 
-    return "redirect:/crew";
+    return "crew";
   }
 
 }
