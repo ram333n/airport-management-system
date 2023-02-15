@@ -2,12 +2,14 @@ package edu.prokopchuk.springboottutorial.controller;
 
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.service.CrewService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -42,7 +44,12 @@ public class CrewController {
   }
 
   @PostMapping("/crew")
-  public String createCrewMember(@ModelAttribute("crewMember") CrewMember crewMember) {
+  public String createCrewMember(@Valid @ModelAttribute("crewMember") CrewMember crewMember,
+                                 Errors errors) {
+    if (errors.hasErrors()) {
+      return "crew-new-form";
+    }
+
     crewService.createCrewMember(crewMember);
 
     return "redirect:/crew";
@@ -63,7 +70,12 @@ public class CrewController {
   }
 
   @PutMapping("/crew")
-  public String editCrewMember(@ModelAttribute("crewMember") CrewMember crewMember) {
+  public String editCrewMember(@Valid @ModelAttribute("crewMember") CrewMember crewMember,
+                               Errors errors) {
+    if (errors.hasErrors()) {
+      return "crew-edit-form";
+    }
+
     crewService.updateCrewMember(crewMember);
 
     return "redirect:/crew";

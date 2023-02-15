@@ -9,6 +9,7 @@
         rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
         crossorigin="anonymous">
+  <link rel="stylesheet" th:src="@{/css/styles.css}">
 
   <title>Create crew member</title>
 </head>
@@ -17,21 +18,66 @@
 
   <h1 class="text-center mt-5">Create new crew member</h1>
 
+<!--  TODO: check uniqueness of passNum-->
+
   <div class="container w-25 mt-5">
     <form method="POST" th:action="@{/crew}" th:object="${crewMember}">
       <div class="mb-3">
         <label for="passNumberInput" class="form-label">Pass number</label>
-        <input th:field="*{passNumber}" type="text" class="form-control" id="passNumberInput">
+        <input th:field="*{passNumber}"
+               type="text"
+               class="form-control"
+               id="passNumberInput"
+               placeholder="PLT-123">
+        <span th:unless="${#fields.hasErrors('passNumber')}" class="form-text text-muted">
+          Pass number must be unique, not blank and contain from 3 to 10 characters.
+          Note that this number becomes unmodifiable after creation
+        </span>
+        <ul th:if="${#fields.hasErrors('passNumber')}">
+          <li th:each="error : ${#fields.errors('passNumber')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
       </div>
 
       <div class="mb-3">
         <label for="nameInput" class="form-label">Name</label>
-        <input th:field="*{name}" type="text" class="form-control" id="nameInput">
+        <input th:field="*{name}"
+               type="text"
+               class="form-control"
+               id="nameInput"
+               placeholder="Name">
+        <span th:unless="${#fields.hasErrors('name')}" class="form-text text-muted">
+          Name must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('name')}">
+          <li th:each="error : ${#fields.errors('name')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
       </div>
 
       <div class="mb-3">
         <label for="surnameInput" class="form-label">Surname</label>
-        <input th:field="*{surname}" type="text" class="form-control" id="surnameInput">
+        <input th:field="*{surname}"
+               type="text"
+               class="form-control"
+               id="surnameInput"
+               placeholder="Surname">
+        <span th:unless="${#fields.hasErrors('surname')}" class="form-text text-muted">
+          Surname must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('surname')}">
+          <li th:each="error : ${#fields.errors('surname')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
       </div>
 
       <label for="positionInput" class="form-label">Position</label>

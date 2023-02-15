@@ -36,19 +36,19 @@ public class CrewMember {
 
   @Id
   @Column(name = "pass_number", length = 10)
-  @NotBlank(message = "Pass number can't be blank")
+  @NotBlank(message = "Pass number can not be blank")
   @Size(min = 3, message = "Pass number must contain at least 3 characters")
   @Size(max = 10, message = "Max length of pass number is 10 characters")
   private String passNumber;
 
   @Column(name = "name", nullable = false)
-  @NotBlank(message = "Name can't be blank")
+  @NotBlank(message = "Name can not be blank")
   @Size(min = 1, message = "Name must contain at least 1 character")
   @Size(max = 255, message = "Max length of name is 255 characters")
   private String name;
 
   @Column(name = "surname", nullable = false)
-  @NotBlank(message = "Surname can't be blank")
+  @NotBlank(message = "Surname can not be blank")
   @Size(min = 1, message = "Name must contain at least 1 character")
   @Size(max = 255, message = "Max length of surname is 255 characters")
   private String surname;

@@ -36,6 +36,16 @@
                type="text"
                class="form-control"
                id="nameInput">
+        <span th:unless="${#fields.hasErrors('name')}" class="form-text text-muted">
+          Name must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('name')}">
+          <li th:each="error : ${#fields.errors('name')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
       </div>
 
       <div class="mb-3">
@@ -45,6 +55,16 @@
                type="text"
                class="form-control"
                id="surnameInput">
+        <span th:unless="${#fields.hasErrors('surname')}" class="form-text text-muted">
+          Surname must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('surname')}">
+          <li th:each="error : ${#fields.errors('surname')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
       </div>
 
       <label for="positionInput" class="form-label">Position</label>
