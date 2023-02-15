@@ -2,11 +2,13 @@ package edu.prokopchuk.springboottutorial.controller;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import edu.prokopchuk.springboottutorial.model.CrewMember;
@@ -14,6 +16,7 @@ import edu.prokopchuk.springboottutorial.model.enums.Position;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.servlet.ModelAndView;
 
 @WebMvcTest(CrewController.class)
 class CrewControllerTest {
@@ -115,6 +117,104 @@ class CrewControllerTest {
 
     assertTrue(content.contains("Surname can not be blank"));
     assertTrue(content.contains("Name must contain at least 1 character"));
+  }
+
+  @Test
+  void createCrewMemberWorksProperly() throws Exception {
+    CrewMember crewMemberAttr = CrewMember.builder()
+        .passNumber("TEST-1")
+        .name("Test name")
+        .surname("Test surname")
+        .position(Position.NAVIGATOR)
+        .build();
+
+    mockMvc.perform(post("/crew").flashAttr("crewMember", crewMemberAttr))
+        .andExpect(status().isFound())
+        .andExpect(view().name("redirect:/crew"))
+        .andExpect(redirectedUrl("/crew"));
+  }
+
+  // TODO: write it, when custom exception handler will be implemented
+//  @Test
+//  void showEditFormThrowsAnException() throws Exception {
+//
+//  }
+
+  @Test
+  void showEditFormWorksProperly() throws Exception {
+    CrewMember crewMemberAttr = CrewMember.builder()
+        .passNumber("TEST-1")
+        .name("Test name")
+        .surname("Test surname")
+        .position(Position.NAVIGATOR)
+        .build();
+
+    Mockito.when(crewService.getCrewMember("TEST-1"))
+        .thenReturn(Optional.of(crewMemberAttr));
+
+    ResultActions resultActions
+        = mockMvc.perform(get("/crew/edit/{path-variable}", "TEST-1"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("crew-edit-form"));
+
+    String content = extractContent(resultActions);
+
+    assertTrue(content.contains("TEST-1"));
+    assertTrue(content.contains("Test name"));
+    assertTrue(content.contains("Test surname"));
+    assertTrue(content.contains(Position.NAVIGATOR.toString()));
+  }
+
+  @Test
+  void editCrewMemberHasErrors() throws Exception {
+    CrewMember crewMemberAttr = CrewMember.builder()
+        .name("")
+        .surname("")
+        .build();
+
+    ResultActions resultActions
+        = mockMvc.perform(put("/crew").flashAttr("crewMember", crewMemberAttr))
+        .andExpect(status().isOk())
+        .andExpect(view().name("crew-edit-form"));
+
+    String content = extractContent(resultActions);
+
+    assertTrue(content.contains("Name can not be blank"));
+    assertTrue(content.contains("Name must contain at least 1 character"));
+
+    assertTrue(content.contains("Surname can not be blank"));
+    assertTrue(content.contains("Name must contain at least 1 character"));
+  }
+
+  @Test
+  void editCrewMemberWorksProperly() throws Exception {
+    CrewMember crewMemberAttr = CrewMember.builder()
+        .passNumber("TEST-1")
+        .name("Test name")
+        .surname("Test surname")
+        .build();
+
+    mockMvc.perform(put("/crew").flashAttr("crewMember", crewMemberAttr))
+        .andExpect(status().isFound())
+        .andExpect(view().name("redirect:/crew"))
+        .andExpect(redirectedUrl("/crew"));
+  }
+
+  // TODO: write it, when custom exception handler will be implemented
+//  @Test
+//  void deleteCrewMemberThrowsAnException() throws Exception {
+//
+//  }
+
+  @Test
+  void deleteCrewMemberThrowsAnException() throws Exception {
+    String passNumber = "TEST-1";
+
+    Mockito.when(crewService.deleteCrewMember(passNumber)).thenReturn(true);
+
+    mockMvc.perform(delete("/crew/{pass-number}", passNumber))
+        .andExpect(status().isOk())
+        .andExpect(view().name("crew"));
   }
 
   private String extractContent(ResultActions resultActions) throws UnsupportedEncodingException {
