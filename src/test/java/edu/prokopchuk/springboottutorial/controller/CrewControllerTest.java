@@ -134,11 +134,16 @@ class CrewControllerTest {
         .andExpect(redirectedUrl("/crew"));
   }
 
-  // TODO: write it, when custom exception handler will be implemented
-//  @Test
-//  void showEditFormThrowsAnException() throws Exception {
-//
-//  }
+  @Test
+  void showEditFormThrowsAnException() throws Exception {
+    String passNumber = "TEST-1";
+
+    Mockito.when(crewService.getCrewMember(passNumber)).thenReturn(Optional.empty());
+
+    mockMvc.perform(get("/crew/edit/{pass-number}", passNumber))
+        .andExpect(status().isNotFound())
+        .andExpect(view().name("crew-member-not-found"));
+  }
 
   @Test
   void showEditFormWorksProperly() throws Exception {
@@ -200,14 +205,19 @@ class CrewControllerTest {
         .andExpect(redirectedUrl("/crew"));
   }
 
-  // TODO: write it, when custom exception handler will be implemented
-//  @Test
-//  void deleteCrewMemberThrowsAnException() throws Exception {
-//
-//  }
-
   @Test
   void deleteCrewMemberThrowsAnException() throws Exception {
+    String passNumber = "TEST-1";
+
+    Mockito.when(crewService.deleteCrewMember(passNumber)).thenReturn(false);
+
+    mockMvc.perform(delete("/crew/{pass-number}", passNumber))
+        .andExpect(status().isNotFound())
+        .andExpect(view().name("crew-member-not-found"));
+  }
+
+  @Test
+  void deleteCrewMemberWorksProperly() throws Exception {
     String passNumber = "TEST-1";
 
     Mockito.when(crewService.deleteCrewMember(passNumber)).thenReturn(true);
