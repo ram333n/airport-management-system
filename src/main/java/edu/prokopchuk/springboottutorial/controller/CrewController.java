@@ -15,7 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
 @Controller
@@ -39,31 +40,17 @@ public class CrewController {
   }
 
   @GetMapping("/crew")
-  public String showCrew(Model model,
+  public String showCrew(ModelMap modelMap,
                          @RequestParam("page") Optional<Integer> pageNumber) {
     int currentPageNumber = pageNumber.orElse(1);
-    int size = frontendProperties.getCrewPageSize();
-    Pageable pageable = PageRequest.of(currentPageNumber - 1, size);
-
-    Page<CrewMember> page = crewService.getCrewPage(pageable);
-    model.addAttribute("crew", page);
-    model.addAttribute("currentPageNumber", currentPageNumber);
-
-    int totalPages = page.getTotalPages();
-
-    if (totalPages > 0) {
-      List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-          .boxed()
-          .collect(Collectors.toList());
-      model.addAttribute("pageNumbers", pageNumbers);
-    }
+    fillPage(modelMap, currentPageNumber);
 
     return "crew";
   }
 
   @GetMapping("/crew/new")
-  public String showCreateForm(Model model) {
-    model.addAttribute("crewMember", new CrewMember());
+  public String showCreateForm(ModelMap modelMap) {
+    modelMap.addAttribute("crewMember", new CrewMember());
 
     return "crew-new-form";
   }
@@ -82,14 +69,14 @@ public class CrewController {
 
   @GetMapping("/crew/edit/{pass-number}")
   public String showEditForm(@PathVariable("pass-number") String passNumber,
-                             Model model) {
+                             ModelMap modelMap) {
     Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
 
     if (crewMember.isEmpty()) {
       throw new CrewMemberNotFoundException("Crew member with given id not found");
     }
 
-    model.addAttribute("crewMember", crewMember.get());
+    modelMap.addAttribute("crewMember", crewMember.get());
 
     return "crew-edit-form";
   }
@@ -107,14 +94,35 @@ public class CrewController {
   }
 
   @DeleteMapping("/crew/{pass-number}")
-  public String deleteCrewMember(@PathVariable("pass-number") String passNumber) {
+  public ModelAndView deleteCrewMember(@PathVariable("pass-number") String passNumber) {
     boolean isDeleted = crewService.deleteCrewMember(passNumber);
 
     if (!isDeleted) {
       throw new CrewMemberNotFoundException("Crew member with given id not found");
     }
 
-    return "crew";
+    ModelAndView mav = new ModelAndView("crew");
+    fillPage(mav.getModelMap(), 1);
+
+    return mav;
+  }
+
+  private void fillPage(ModelMap modelMap, int currentPageNumber) {
+    int size = frontendProperties.getCrewPageSize();
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, size);
+
+    Page<CrewMember> page = crewService.getCrewPage(pageable);
+    modelMap.addAttribute("crew", page);
+    modelMap.addAttribute("currentPageNumber", currentPageNumber);
+
+    int totalPages = page.getTotalPages();
+
+    if (totalPages > 0) {
+      List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+          .boxed()
+          .collect(Collectors.toList());
+      modelMap.addAttribute("pageNumbers", pageNumbers);
+    }
   }
 
 }
