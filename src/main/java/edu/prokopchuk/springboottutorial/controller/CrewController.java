@@ -1,13 +1,19 @@
 package edu.prokopchuk.springboottutorial.controller;
 
+import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -17,22 +23,40 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
 public class CrewController {
 
   private final CrewService crewService;
+  private final FrontendProperties frontendProperties;
 
   @Autowired
-  public CrewController(CrewService crewService) {
+  public CrewController(CrewService crewService, FrontendProperties frontendProperties) {
     this.crewService = crewService;
+    this.frontendProperties = frontendProperties;
   }
 
   @GetMapping("/crew")
-  public String showCrew(Model model) {
-    List<CrewMember> crew = crewService.getAll();
-    model.addAttribute("crew", crew);
+  public String showCrew(Model model,
+                         @RequestParam("page") Optional<Integer> pageNumber) {
+    int currentPageNumber = pageNumber.orElse(1);
+    int size = frontendProperties.getCrewPageSize();
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, size);
+
+    Page<CrewMember> page = crewService.getCrewPage(pageable);
+    model.addAttribute("crew", page);
+    model.addAttribute("currentPageNumber", currentPageNumber);
+
+    int totalPages = page.getTotalPages();
+
+    if (totalPages > 0) {
+      List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+          .boxed()
+          .collect(Collectors.toList());
+      model.addAttribute("pageNumbers", pageNumbers);
+    }
 
     return "crew";
   }

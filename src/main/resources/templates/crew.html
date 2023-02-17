@@ -82,6 +82,26 @@
         </tbody>
       </table>
     </div>
+
+    <nav>
+      <ul class="pagination">
+        <li class="page-item">
+          <a th:class="'page-link ' + ${currentPageNumber == 1 ? 'disabled' : ''}"
+             th:href="@{/crew(page=${currentPageNumber - 1})}">Previous</a>
+        </li>
+
+        <li class="page-item" th:each="page : ${pageNumbers}">
+          <a th:class="'page-link ' + ${page == currentPageNumber ? 'active' : ''}"
+             th:href="@{/crew(page=${page})}" th:text="${page}"></a>
+        </li>
+
+        <li class="page-item">
+          <a th:class="'page-link ' + ${currentPageNumber == crew.getTotalPages()
+                       || crew.getTotalPages() == 0 ? 'disabled' : ''}"
+             th:href="@{/crew(page=${currentPageNumber + 1})}">Next</a>
+        </li>
+      </ul>
+    </nav>
   </div>
 </body>
 </html>
