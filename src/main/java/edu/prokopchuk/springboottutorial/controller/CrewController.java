@@ -1,5 +1,6 @@
 package edu.prokopchuk.springboottutorial.controller;
 
+import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import jakarta.validation.Valid;
@@ -61,7 +62,7 @@ public class CrewController {
     Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
 
     if (crewMember.isEmpty()) {
-      throw new IllegalArgumentException("Crew member with specific id not found");
+      throw new CrewMemberNotFoundException("Crew member with given id not found");
     }
 
     model.addAttribute("crewMember", crewMember.get());
@@ -86,7 +87,7 @@ public class CrewController {
     boolean isDeleted = crewService.deleteCrewMember(passNumber);
 
     if (!isDeleted) {
-      throw new IllegalArgumentException("Crew member with specific id not found");
+      throw new CrewMemberNotFoundException("Crew member with given id not found");
     }
 
     return "crew";
