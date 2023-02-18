@@ -25,6 +25,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -39,6 +42,9 @@ class CrewControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private FrontendProperties frontendProperties;
 
   @TestConfiguration
   static class CrewControllerTestConfig {
@@ -75,7 +81,10 @@ class CrewControllerTest {
             .build()
     );
 
-    Mockito.when(crewService.getAll()).thenReturn(crew);
+    int pageSize = frontendProperties.getCrewPageSize();
+    Pageable pageable = PageRequest.of(0, pageSize);
+
+    Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(crew));
 
     ResultActions resultActions = mockMvc.perform(get("/crew"))
         .andExpect(status().isOk())
@@ -232,8 +241,11 @@ class CrewControllerTest {
   @Test
   void deleteCrewMemberWorksProperly() throws Exception {
     String passNumber = "TEST-1";
+    int pageSize = frontendProperties.getCrewPageSize();
+    Pageable pageable = PageRequest.of(0, pageSize);
 
     Mockito.when(crewService.deleteCrewMember(passNumber)).thenReturn(true);
+    Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(List.of()));
 
     mockMvc.perform(delete("/crew/{pass-number}", passNumber))
         .andExpect(status().isOk())
