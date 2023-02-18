@@ -107,8 +107,6 @@ public class CrewController {
     return mav;
   }
 
-  //TODO: 1) fix pagination issue
-
   private void fillPage(ModelMap modelMap, int currentPageNumber) {
     int size = frontendProperties.getCrewPageSize();
     Pageable pageable = PageRequest.of(currentPageNumber - 1, size);
