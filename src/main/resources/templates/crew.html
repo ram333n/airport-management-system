@@ -9,7 +9,11 @@
         rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
         crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"
+          integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD"
+          crossorigin="anonymous"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+
 
   <script th:inline="javascript">
     function deleteCrewMember(passNumber) {
@@ -21,9 +25,11 @@
 
       $.ajax({
         url: '/crew/' + passNumber,
-        type: 'DELETE'
-      }).done((data) => {
-        window.location.href = '/crew'
+        type: 'DELETE',
+        dataType: 'html',
+        success: (data) => {
+          window.location.href = '/crew'
+        }
       })
     }
   </script>
@@ -34,9 +40,14 @@
 <body>
   <header th:replace="~{/navbar :: navbar}"></header>
 
+<!--  <div th:if="${message}" class="alert alert-info alert-dismissible">-->
+<!--    <strong th:text="${message}"></strong>-->
+<!--    <button type="button" class="btn-close"></button>-->
+<!--  </div>-->
+
   <h1 class="text-center mt-5">Crew members</h1>
 
-  <div class="container ">
+  <div class="container">
     <div class="row create-member-btn w-25 pb-1">
       <a th:href="@{/crew/new}" class="btn btn-success">
         Create member

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
@@ -94,17 +96,13 @@ public class CrewController {
   }
 
   @DeleteMapping("/crew/{pass-number}")
-  public ModelAndView deleteCrewMember(@PathVariable("pass-number") String passNumber) {
+  @ResponseStatus(HttpStatus.OK)
+  public void deleteCrewMember(@PathVariable("pass-number") String passNumber) {
     boolean isDeleted = crewService.deleteCrewMember(passNumber);
 
     if (!isDeleted) {
       throw new CrewMemberNotFoundException("Crew member with given id not found");
     }
-
-    ModelAndView mav = new ModelAndView("crew");
-    fillPage(mav.getModelMap(), 1);
-
-    return mav;
   }
 
   private void fillPage(ModelMap modelMap, int currentPageNumber) {
