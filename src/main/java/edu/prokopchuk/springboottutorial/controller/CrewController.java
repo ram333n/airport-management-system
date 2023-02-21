@@ -96,7 +96,7 @@ public class CrewController {
   }
 
   @DeleteMapping("/crew/{pass-number}")
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteCrewMember(@PathVariable("pass-number") String passNumber) {
     boolean isDeleted = crewService.deleteCrewMember(passNumber);
 

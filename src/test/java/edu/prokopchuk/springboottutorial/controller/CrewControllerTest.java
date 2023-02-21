@@ -248,8 +248,7 @@ class CrewControllerTest {
     Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(List.of()));
 
     mockMvc.perform(delete("/crew/{pass-number}", passNumber))
-        .andExpect(status().isOk())
-        .andExpect(view().name("crew"));
+        .andExpect(status().isNoContent());
   }
 
   private String extractContent(ResultActions resultActions) throws UnsupportedEncodingException {
