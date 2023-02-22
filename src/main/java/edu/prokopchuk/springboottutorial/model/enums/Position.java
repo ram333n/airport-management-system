@@ -6,7 +6,7 @@ public enum Position {
   OPERATOR("Operator"),
   STEWARDESS("Stewardess");
 
-  private String value;
+  private final String value;
 
   Position(String value) {
     this.value = value;
