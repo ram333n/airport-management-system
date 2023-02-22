@@ -15,7 +15,7 @@ import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.enums.Position;
 import edu.prokopchuk.springboottutorial.service.CrewService;
-import edu.prokopchuk.springboottutorial.validator.crew.UniquePassNumberValidator;
+import edu.prokopchuk.springboottutorial.service.validator.crew.UniquePassNumberValidator;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;

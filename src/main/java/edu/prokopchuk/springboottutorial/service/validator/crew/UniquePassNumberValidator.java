@@ -1,4 +1,4 @@
-package edu.prokopchuk.springboottutorial.validator.crew;
+package edu.prokopchuk.springboottutorial.service.validator.crew;
 
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.repository.CrewRepository;
