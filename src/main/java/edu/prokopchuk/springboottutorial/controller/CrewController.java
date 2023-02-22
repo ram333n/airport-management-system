@@ -4,6 +4,7 @@ import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.service.CrewService;
+import edu.prokopchuk.springboottutorial.validator.crew.UniquePassNumberValidator;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,7 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
 @Controller
@@ -34,11 +35,15 @@ public class CrewController {
 
   private final CrewService crewService;
   private final FrontendProperties frontendProperties;
+  private final UniquePassNumberValidator uniquePassNumberValidator;
 
   @Autowired
-  public CrewController(CrewService crewService, FrontendProperties frontendProperties) {
+  public CrewController(CrewService crewService,
+                        FrontendProperties frontendProperties,
+                        UniquePassNumberValidator uniquePassNumberValidator) {
     this.crewService = crewService;
     this.frontendProperties = frontendProperties;
+    this.uniquePassNumberValidator = uniquePassNumberValidator;
   }
 
   @GetMapping("/crew")
@@ -60,7 +65,10 @@ public class CrewController {
   @PostMapping("/crew")
   public String createCrewMember(@Valid @ModelAttribute("crewMember") CrewMember crewMember,
                                  Errors errors) {
+    uniquePassNumberValidator.validate(crewMember, errors);
+
     if (errors.hasErrors()) {
+      System.out.println(errors.getGlobalErrors());
       return "crew-new-form";
     }
 

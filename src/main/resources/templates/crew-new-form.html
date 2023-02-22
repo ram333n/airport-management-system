@@ -18,8 +18,6 @@
 
   <h1 class="text-center mt-5">Create new crew member</h1>
 
-<!--  TODO: check uniqueness of passNum-->
-
   <div class="container w-25 mt-5">
     <form method="POST" th:action="@{/crew}" th:object="${crewMember}">
       <div class="mb-3">
@@ -30,7 +28,7 @@
                id="passNumberInput"
                placeholder="PLT-123">
         <span th:unless="${#fields.hasErrors('passNumber')}" class="form-text text-muted">
-          Pass number must be unique, not blank and contain from 3 to 10 characters.
+          Pass number must be unique, not blank and contain from 3 to 10 not whitespace characters.
           Note that this number becomes unmodifiable after creation
         </span>
         <ul th:if="${#fields.hasErrors('passNumber')}">

@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Objects;
@@ -37,6 +38,7 @@ public class CrewMember {
   @Id
   @Column(name = "pass_number", length = 10)
   @NotBlank(message = "Pass number can not be blank")
+  @Pattern(regexp = "\\S*", message = "Pass number can not contain any whitespace character")
   @Size(min = 3, message = "Pass number must contain at least 3 characters")
   @Size(max = 10, message = "Max length of pass number is 10 characters")
   private String passNumber;
