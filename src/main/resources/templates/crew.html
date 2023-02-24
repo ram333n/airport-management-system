@@ -26,7 +26,7 @@
       $.ajax({
         url: '/crew/' + passNumber,
         type: 'DELETE',
-        success: (data) => {
+        success: () => {
           window.location.href = '/crew'
         }
       })
@@ -57,10 +57,10 @@
       <table class="table table-hover table-info table-striped">
         <thead class="table-dark">
           <tr>
-            <th>Pass number</th>
-            <th>Name</th>
-            <th>Surname</th>
-            <th>Position</th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'passNumber')}">Pass number</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'name')}">Name</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'surname')}">Surname</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'position')}">Position</a></th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -97,18 +97,24 @@
       <ul class="pagination">
         <li class="page-item">
           <a th:class="'page-link ' + ${currentPageNumber == 1 ? 'disabled' : ''}"
-             th:href="@{/crew(page=${currentPageNumber - 1})}">Previous</a>
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(currentPageNumber - 1))}">
+            Previous
+          </a>
         </li>
 
         <li class="page-item" th:each="page : ${pageNumbers}">
           <a th:class="'page-link ' + ${page == currentPageNumber ? 'active' : ''}"
-             th:href="@{/crew(page=${page})}" th:text="${page}"></a>
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(page))}"
+             th:text="${page}">
+          </a>
         </li>
 
         <li class="page-item">
           <a th:class="'page-link ' + ${currentPageNumber == crew.getTotalPages()
                        || crew.getTotalPages() == 0 ? 'disabled' : ''}"
-             th:href="@{/crew(page=${currentPageNumber + 1})}">Next</a>
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(currentPageNumber + 1))}">
+            Next
+          </a>
         </li>
       </ul>
     </nav>

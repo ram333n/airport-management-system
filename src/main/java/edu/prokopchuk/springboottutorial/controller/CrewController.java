@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +30,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-//TODO: add redirects to /crew/{pass-number}
 //TODO: try set browser URL without reload
 @Slf4j
 @Controller
@@ -50,9 +50,12 @@ public class CrewController {
 
   @GetMapping("/crew")
   public String showCrew(ModelMap modelMap,
-                         @RequestParam("page") Optional<Integer> pageNumber) {
-    int currentPageNumber = pageNumber.orElse(1);
-    fillPage(modelMap, currentPageNumber);
+                         @RequestParam("page") Optional<Integer> page,
+                         @RequestParam("sortby") Optional<String> sortBy) {
+    int currentPageNumber = page.orElse(1);
+    String sortByField = sortBy.orElse("passNumber");
+
+    fillPage(modelMap, currentPageNumber, sortByField);
 
     return "crew";
   }
@@ -135,9 +138,10 @@ public class CrewController {
     }
   }
 
-  private void fillPage(ModelMap modelMap, int currentPageNumber) {
+  private void fillPage(ModelMap modelMap, int currentPageNumber, String sortByField) {
     int size = frontendProperties.getCrewPageSize();
-    Pageable pageable = PageRequest.of(currentPageNumber - 1, size);
+    Sort sort = Sort.by(sortByField);
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, size, sort);
 
     Page<CrewMember> page = crewService.getCrewPage(pageable);
     modelMap.addAttribute("crew", page);

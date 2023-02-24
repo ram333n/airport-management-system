@@ -19,6 +19,7 @@ import edu.prokopchuk.springboottutorial.service.validator.crew.UniquePassNumber
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @WebMvcTest(CrewController.class)
 class CrewControllerTest {
@@ -58,7 +61,14 @@ class CrewControllerTest {
       return new FrontendProperties();
     }
 
-  }
+    @Bean
+    public BiFunction<String, String, String> replaceOrAddParam() {
+      return (paramName, value) -> ServletUriComponentsBuilder.fromCurrentRequest()
+          .replaceQueryParam(paramName, value)
+          .toUriString();
+      }
+
+    }
 
   @Test
   void contextLoads() {
@@ -86,7 +96,7 @@ class CrewControllerTest {
     );
 
     int pageSize = frontendProperties.getCrewPageSize();
-    Pageable pageable = PageRequest.of(0, pageSize);
+    Pageable pageable = PageRequest.of(0, pageSize, Sort.by("passNumber"));
 
     Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(crew));
 
