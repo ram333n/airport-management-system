@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+//TODO: add redirects to /crew/{pass-number}
+//TODO: try set browser URL without reload
 @Slf4j
 @Controller
 public class CrewController {
@@ -52,6 +55,22 @@ public class CrewController {
     fillPage(modelMap, currentPageNumber);
 
     return "crew";
+  }
+
+  @GetMapping("/crew/{pass-number}")
+  public String showCrewMember(@PathVariable("pass-number") String passNumber,
+                               Model model) {
+    Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
+
+    if (crewMember.isEmpty()) {
+      throw new CrewMemberNotFoundException(
+          String.format("Crew member with pass number %s not found", passNumber)
+      );
+    }
+
+    model.addAttribute("crewMember", crewMember.get());
+
+    return "crew-member";
   }
 
   @GetMapping("/crew/new")
@@ -82,7 +101,9 @@ public class CrewController {
     Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
 
     if (crewMember.isEmpty()) {
-      throw new CrewMemberNotFoundException("Crew member with given id not found");
+      throw new CrewMemberNotFoundException(
+          String.format("Crew member with pass number %s not found", passNumber)
+      );
     }
 
     modelMap.addAttribute("crewMember", crewMember.get());
@@ -108,7 +129,9 @@ public class CrewController {
     boolean isDeleted = crewService.deleteCrewMember(passNumber);
 
     if (!isDeleted) {
-      throw new CrewMemberNotFoundException("Crew member with given id not found");
+      throw new CrewMemberNotFoundException(
+          String.format("Crew member with pass number %s not found", passNumber)
+      );
     }
   }
 
