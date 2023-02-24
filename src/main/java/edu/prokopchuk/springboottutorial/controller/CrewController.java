@@ -86,13 +86,12 @@ public class CrewController {
     uniquePassNumberValidator.validate(crewMember, errors);
 
     if (errors.hasErrors()) {
-      System.out.println(errors.getGlobalErrors());
       return "crew-new-form";
     }
 
     crewService.createCrewMember(crewMember);
 
-    return "redirect:/crew";
+    return "redirect:/crew/" + crewMember.getPassNumber();
   }
 
   @GetMapping("/crew/edit/{pass-number}")
@@ -111,16 +110,17 @@ public class CrewController {
     return "crew-edit-form";
   }
 
-  @PutMapping("/crew")
+  @PutMapping("/crew/{pass-number}")
   public String editCrewMember(@Valid @ModelAttribute("crewMember") CrewMember crewMember,
-                               Errors errors) {
+                               Errors errors,
+                               @PathVariable("pass-number") String passNumber) {
     if (errors.hasErrors()) {
       return "crew-edit-form";
     }
 
     crewService.updateCrewMember(crewMember);
 
-    return "redirect:/crew";
+    return "redirect:/crew/" + passNumber;
   }
 
   @DeleteMapping("/crew/{pass-number}")

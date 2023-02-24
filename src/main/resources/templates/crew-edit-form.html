@@ -18,7 +18,7 @@
   <h1 class="text-center mt-5">Edit crew member</h1>
 
   <div class="container w-25 mt-5">
-    <form th:method="PUT" th:action="@{/crew}" th:object="${crewMember}">
+    <form th:method="PUT" th:action="@{/crew/{pass-number}(pass-number=${crewMember.passNumber})}" th:object="${crewMember}">
       <div class="mb-3">
         <label for="passNumberInput" class="form-label">Pass number</label>
         <input th:field="*{passNumber}"

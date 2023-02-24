@@ -156,8 +156,8 @@ class CrewControllerTest {
 
     mockMvc.perform(post("/crew").flashAttr("crewMember", crewMemberAttr))
         .andExpect(status().isFound())
-        .andExpect(view().name("redirect:/crew"))
-        .andExpect(redirectedUrl("/crew"));
+        .andExpect(view().name("redirect:/crew/TEST-1"))
+        .andExpect(redirectedUrl("/crew/TEST-1"));
   }
 
   @Test
@@ -199,12 +199,14 @@ class CrewControllerTest {
   @Test
   void editCrewMemberHasErrors() throws Exception {
     CrewMember crewMemberAttr = CrewMember.builder()
+        .passNumber("TEST-1")
         .name("")
         .surname("")
         .build();
 
     ResultActions resultActions
-        = mockMvc.perform(put("/crew").flashAttr("crewMember", crewMemberAttr))
+        = mockMvc.perform(put("/crew/{pass-number}", "TEST-1")
+            .flashAttr("crewMember", crewMemberAttr))
         .andExpect(status().isOk())
         .andExpect(view().name("crew-edit-form"));
 
@@ -225,10 +227,10 @@ class CrewControllerTest {
         .surname("Test surname")
         .build();
 
-    mockMvc.perform(put("/crew").flashAttr("crewMember", crewMemberAttr))
+    mockMvc.perform(put("/crew/TEST-1").flashAttr("crewMember", crewMemberAttr))
         .andExpect(status().isFound())
-        .andExpect(view().name("redirect:/crew"))
-        .andExpect(redirectedUrl("/crew"));
+        .andExpect(view().name("redirect:/crew/TEST-1"))
+        .andExpect(redirectedUrl("/crew/TEST-1"));
   }
 
   @Test
