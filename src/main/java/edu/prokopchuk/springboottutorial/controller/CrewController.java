@@ -61,7 +61,7 @@ public class CrewController {
 
   @GetMapping("/crew/{pass-number}")
   public String showCrewMember(@PathVariable("pass-number") String passNumber,
-                               Model model) {
+                               ModelMap modelMap) {
     Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
 
     if (crewMember.isEmpty()) {
@@ -70,7 +70,7 @@ public class CrewController {
       );
     }
 
-    model.addAttribute("crewMember", crewMember.get());
+    modelMap.addAttribute("crewMember", crewMember.get());
 
     return "crew-member";
   }
