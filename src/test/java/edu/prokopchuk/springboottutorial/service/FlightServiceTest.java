@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class FlightServiceTest {
+
   @Mock
   private static FlightRepository flightRepository;
 
@@ -43,4 +44,5 @@ class FlightServiceTest {
     boolean actual = flightService.deleteFlight("test");
     assertTrue(actual);
   }
+
 }

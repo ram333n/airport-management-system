@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+
+  <title>Edit crew member</title>
+</head>
+<body>
+  <header th:replace="~{/navbar :: navbar}"></header>
+
+  <h1 class="text-center mt-5">Edit crew member</h1>
+
+  <div class="container w-25 mt-5">
+    <form th:method="PUT" th:action="@{/crew/{pass-number}(pass-number=${crewMember.passNumber})}" th:object="${crewMember}">
+      <div class="mb-3">
+        <label for="passNumberInput" class="form-label">Pass number</label>
+        <input th:field="*{passNumber}"
+               th:value="${crewMember.passNumber}"
+               type="text"
+               class="form-control form-dis"
+               id="passNumberInput"
+               readonly>
+      </div>
+
+      <div class="mb-3">
+        <label for="nameInput" class="form-label">Name</label>
+        <input th:field="*{name}"
+               th:value="${crewMember.name}"
+               type="text"
+               class="form-control"
+               id="nameInput">
+        <span th:unless="${#fields.hasErrors('name')}" class="form-text text-muted">
+          Name must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('name')}">
+          <li th:each="error : ${#fields.errors('name')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-3">
+        <label for="surnameInput" class="form-label">Surname</label>
+        <input th:field="*{surname}"
+               th:value="${crewMember.surname}"
+               type="text"
+               class="form-control"
+               id="surnameInput">
+        <span th:unless="${#fields.hasErrors('surname')}" class="form-text text-muted">
+          Surname must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('surname')}">
+          <li th:each="error : ${#fields.errors('surname')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
+      </div>
+
+      <label for="positionInput" class="form-label">Position</label>
+      <select th:field="*{position}"
+              th:value="${crewMember.position}"
+              class="form-select mb-3"
+              id="positionInput">
+        <option th:value="'PILOT'" th:text="Pilot">Pilot</option>
+        <option th:value="'NAVIGATOR'" th:text="Navigator">Navigator</option>
+        <option th:value="'OPERATOR'" th:text="Operator">Operator</option>
+        <option th:value="'STEWARDESS'" th:text="Stewardess">Stewardess</option>
+      </select>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
+
   @Mock
   private static UserRepository userRepository;
 
@@ -43,4 +44,5 @@ class UserServiceTest {
     boolean actual = userService.deleteUser(0L);
     assertTrue(actual);
   }
+
 }
