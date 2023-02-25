@@ -2,7 +2,6 @@ package edu.prokopchuk.springboottutorial.service;
 
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.repository.CrewRepository;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
