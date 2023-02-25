@@ -119,6 +119,41 @@ class CrewControllerTest {
   }
 
   @Test
+  void showCrewMemberThrowsAnException() throws Exception {
+    String passNumber = "TEST-1";
+
+    Mockito.when(crewService.getCrewMember(passNumber)).thenReturn(Optional.empty());
+
+    mockMvc.perform(get("/crew/{pass-number}", passNumber))
+        .andExpect(status().isNotFound())
+        .andExpect(view().name("crew-member-not-found"));
+  }
+
+  @Test
+  void showCrewMemberWorksProperly() throws Exception {
+    String passNumber = "TEST-1";
+    CrewMember crewMember = CrewMember.builder()
+        .passNumber(passNumber)
+        .name("Test name")
+        .surname("Test surname")
+        .position(Position.NAVIGATOR)
+        .build();
+
+    Mockito.when(crewService.getCrewMember(passNumber)).thenReturn(Optional.of(crewMember));
+
+    ResultActions resultActions = mockMvc.perform(get("/crew/{pass-number}", passNumber))
+        .andExpect(status().isOk())
+        .andExpect(view().name("crew-member"));
+
+    String content = extractContent(resultActions);
+
+    assertTrue(content.contains(passNumber));
+    assertTrue(content.contains(crewMember.getName()));
+    assertTrue(content.contains(crewMember.getSurname()));
+    assertTrue(content.contains(crewMember.getPosition().toString()));
+  }
+
+  @Test
   void showCreateFormWorksProperly() throws Exception {
     ResultActions resultActions = mockMvc.perform(get("/crew/new"))
         .andExpect(status().isOk())

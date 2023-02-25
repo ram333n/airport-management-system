@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-//TODO: try set browser URL without reload
 @Slf4j
 @Controller
 public class CrewController {
