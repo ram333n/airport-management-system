@@ -21,7 +21,7 @@
   <h1 class="text-center mt-5">Crew members</h1>
 
   <div class="container">
-    <div class="row create-member-btn w-25 pb-1">
+    <div class="row w-25 pb-1">
       <a th:href="@{/crew/new}" class="btn btn-success">
         Create member
       </a>
@@ -41,7 +41,7 @@
 
         <tbody>
           <tr th:each="member : ${crew}">
-            <td class="w-25">
+            <td>
               <a th:text="${member.passNumber}"
                  th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
                 passNumber
