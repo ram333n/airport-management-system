@@ -24,6 +24,7 @@ import org.springframework.test.context.jdbc.SqlGroup;
     @Sql(value = "classpath:test-init.sql", executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 })
 class CrewServiceTest {
+
   @Autowired
   private CrewRepository crewRepository;
 

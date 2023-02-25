@@ -29,10 +29,6 @@ public class CrewService {
     return crewRepository.findById(passNumber);
   }
 
-  public List<CrewMember> getAll() {
-    return crewRepository.findAll();
-  }
-
   public Page<CrewMember> getCrewPage(Pageable pageable) {
     return crewRepository.findAll(pageable);
   }
