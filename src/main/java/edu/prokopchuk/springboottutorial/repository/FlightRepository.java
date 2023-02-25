@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FlightRepository extends JpaRepository<Flight, String> {
 
+  long deleteByFlightNumber(String flightNumber);
+
 }
