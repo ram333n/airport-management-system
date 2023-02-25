@@ -4,7 +4,10 @@ import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.repository.FlightRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FlightService {
@@ -16,20 +19,27 @@ public class FlightService {
     this.flightRepository = flightRepository;
   }
 
+  @Transactional
   public Flight createFlight(Flight flight) {
-    return new Flight();
+    return flightRepository.save(flight);
   }
 
   public Optional<Flight> getFlight(String flightNumber) {
-    return Optional.of(new Flight());
+    return flightRepository.findById(flightNumber);
   }
 
-  public Flight updateFlight(String flightNumber, Flight flight) {
-    return new Flight();
+  public Page<Flight> getFlightPage(Pageable pageable) {
+    return flightRepository.findAll(pageable);
   }
 
+  @Transactional
+  public Flight updateFlight(Flight flight) {
+    return flightRepository.save(flight);
+  }
+
+  @Transactional
   public boolean deleteFlight(String flightNumber) {
-    return true;
+    return flightRepository.deleteByFlightNumber(flightNumber) > 0;
   }
 
 }
