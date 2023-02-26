@@ -1,13 +1,13 @@
 package edu.prokopchuk.springboottutorial.controller;
 
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
-import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.service.FlightService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +16,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Slf4j
 @Controller
 public class FlightController {
 
@@ -41,6 +44,22 @@ public class FlightController {
     fillPage(modelMap, currentPageNumber, sortByField);
 
     return "flights";
+  }
+
+  @GetMapping("/flights/new")
+  public String showCreateForm(ModelMap modelMap) {
+    modelMap.addAttribute("flight", new Flight());
+
+    return "flights-new-form";
+  }
+
+  @PostMapping("/flights")
+  public String createFlight(@ModelAttribute("flight") Flight flight) {
+    log.info("Create flight: {}", flight);
+
+    flightService.createFlight(flight);
+
+    return "redirect:/flights"; //TODO: change it to "redirect:/flights/{flight-number}"
   }
 
   private void fillPage(ModelMap modelMap, int currentPageNumber, String sortByField) {
