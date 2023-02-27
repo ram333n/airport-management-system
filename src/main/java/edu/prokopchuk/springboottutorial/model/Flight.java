@@ -55,13 +55,11 @@ public class Flight {
   private String destination;
 
   @Column(name = "departure_time", nullable = false)
-  @NotNull(message = "Departure time can not be blank")
   @Future(message = "Departure time must be in future")
   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
   private LocalDateTime departureTime;
 
   @Column(name = "arrival_time", nullable = false)
-  @NotNull(message = "Arrival time can not be blank")
   @Future(message = "Arrival time must be in future")
   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
   private LocalDateTime arrivalTime;

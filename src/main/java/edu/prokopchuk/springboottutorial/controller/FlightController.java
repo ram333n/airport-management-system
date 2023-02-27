@@ -4,6 +4,8 @@ import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.FlightNotFoundException;
 import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.service.FlightService;
+import edu.prokopchuk.springboottutorial.service.validator.flight.FlightDurationValidator;
+import edu.prokopchuk.springboottutorial.service.validator.flight.UniqueFlightNumberValidator;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -31,12 +33,18 @@ public class FlightController {
 
   private final FlightService flightService;
   private final FrontendProperties frontendProperties;
+  private final UniqueFlightNumberValidator uniqueFlightNumberValidator;
+  private final FlightDurationValidator flightDurationValidator;
 
   @Autowired
   public FlightController(FlightService flightService,
-                          FrontendProperties frontendProperties) {
+                          FrontendProperties frontendProperties,
+                          UniqueFlightNumberValidator uniqueFlightNumberValidator,
+                          FlightDurationValidator flightDurationValidator) {
     this.flightService = flightService;
     this.frontendProperties = frontendProperties;
+    this.uniqueFlightNumberValidator = uniqueFlightNumberValidator;
+    this.flightDurationValidator = flightDurationValidator;
   }
 
   @GetMapping("/flights")
@@ -61,6 +69,8 @@ public class FlightController {
   @PostMapping("/flights")
   public String createFlight(@Valid @ModelAttribute("flight") Flight flight,
                              Errors errors) {
+    uniqueFlightNumberValidator.validate(flight, errors);
+    flightDurationValidator.validate(flight, errors);
 
     if (errors.hasErrors()) {
       return "flights-new-form";
@@ -92,6 +102,8 @@ public class FlightController {
   public String editFlight(@Valid @ModelAttribute("flight") Flight flight,
                            Errors errors,
                            @PathVariable("flight-number") String flightNumber) {
+    flightDurationValidator.validate(flight, errors);
+
     if (errors.hasErrors()) {
       return "flights-edit-form";
     }

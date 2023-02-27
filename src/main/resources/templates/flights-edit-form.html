@@ -75,7 +75,7 @@
                class="form-control"
                id="departureTimeInput">
         <span th:unless="${#fields.hasErrors('departureTime')}" class="form-text text-muted">
-          Departure time must be in future and not blank
+          Departure time must be in the future, not blank and after arrival time
         </span>
         <ul th:if="${#fields.hasErrors('departureTime')}">
           <li th:each="error : ${#fields.errors('departureTime')}"
@@ -94,7 +94,7 @@
                class="form-control"
                id="arrivalTimeInput">
         <span th:unless="${#fields.hasErrors('arrivalTime')}" class="form-text text-muted">
-          Departure time must be in future and not blank
+          Arrival time must be in future and not blank
         </span>
         <ul th:if="${#fields.hasErrors('arrivalTime')}">
           <li th:each="error : ${#fields.errors('arrivalTime')}"

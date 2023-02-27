@@ -1,4 +1,4 @@
-package edu.prokopchuk.springboottutorial.validator.crew;
+package edu.prokopchuk.springboottutorial.service.validator.crew;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
