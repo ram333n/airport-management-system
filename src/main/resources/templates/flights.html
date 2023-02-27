@@ -47,10 +47,11 @@
             </td>
             <td th:text="${flight.departureFrom}">departureFrom</td>
             <td th:text="${flight.destination}">destination</td>
-            <td th:text="${flight.departureTime}">departureTime</td>
-            <td th:text="${flight.arrivalTime}">arrivalTime</td>
+            <td th:text="${#temporals.format(flight.departureTime, 'dd-MM-yyyy HH:mm')}">departureTime</td>
+            <td th:text="${#temporals.format(flight.arrivalTime, 'dd-MM-yyyy HH:mm')}">arrivalTime</td>
             <td>
-              <a class="btn btn-primary">
+              <a th:href="@{/flights/edit/{flight-number}(flight-number=${flight.flightNumber})}"
+                 class="btn btn-primary">
                 Edit
               </a>
 
