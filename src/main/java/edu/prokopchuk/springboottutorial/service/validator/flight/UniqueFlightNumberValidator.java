@@ -30,7 +30,7 @@ public class UniqueFlightNumberValidator implements Validator {
 
     if (flightRepository.existsById(flightNumber)) {
       errors.rejectValue("flightNumber",
-          "flightNumber",
+          "flightNumberIsNotUnique",
           "Flight with this number already exists");
     }
   }

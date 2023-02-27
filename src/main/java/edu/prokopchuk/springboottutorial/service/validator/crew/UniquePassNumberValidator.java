@@ -30,7 +30,7 @@ public class UniquePassNumberValidator implements Validator {
 
     if (crewRepository.existsById(passNumber)) {
       errors.rejectValue("passNumber",
-          "passNumber",
+          "passNumberIsNotUnique",
           "Crew member with this pass number already exists");
     }
   }

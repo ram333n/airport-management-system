@@ -50,7 +50,7 @@ public class FlightDurationValidator implements Validator {
 
     if (departureTime.isAfter(arrivalTime)) {
       errors.rejectValue("departureTime",
-          "departureTime",
+          "departureTimeIsBeforeArrivalTime",
           "Departure time must be before arrival time");
     }
   }
