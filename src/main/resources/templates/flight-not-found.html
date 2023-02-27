@@ -11,7 +11,7 @@
         crossorigin="anonymous">
   <link rel="stylesheet" th:href="@{/css/styles.css}">
 
-  <title>Crew member not found</title>
+  <title>Flight not found</title>
 </head>
 <body>
   <header th:replace="~{/navbar :: navbar}"></header>
@@ -19,8 +19,8 @@
   <h1 class="text-center mt-5">An error occurred!</h1>
 
   <div class="container text-center">
-    <img class="not-found-msg-img mt-5" th:src="@{/img/pilot.png}" alt="pilot">
-    <p>Requested crew member not found</p>
+    <img class="not-found-msg-img mt-5" th:src="@{/img/flight.png}" alt="pilot">
+    <p>Requested flight not found</p>
     <a class="btn btn-primary mt-5" th:href="@{/home}">Back to home page</a>
   </div>
 </body>
