@@ -59,6 +59,22 @@ public class FlightController {
     return "flights";
   }
 
+  @GetMapping("/flights/{flight-number}")
+  public String getFlight(@PathVariable("flight-number") String flightNumber,
+                          ModelMap modelMap) {
+    Optional<Flight> flight = flightService.getFlight(flightNumber);
+
+    if (flight.isEmpty()) {
+      throw new FlightNotFoundException(
+          String.format("Flight with flight number %s not found", flightNumber)
+      );
+    }
+
+    modelMap.addAttribute("flight", flight.get());
+
+    return "flight";
+  }
+
   @GetMapping("/flights/new")
   public String showCreateForm(ModelMap modelMap) {
     modelMap.addAttribute("flight", new Flight());
@@ -78,7 +94,7 @@ public class FlightController {
 
     flightService.createFlight(flight);
 
-    return "redirect:/flights"; //TODO: change it to "redirect:/flights/{flight-number}"
+    return "redirect:/flights/" + flight.getFlightNumber();
   }
 
   @GetMapping("/flights/edit/{flight-number}")
@@ -92,7 +108,6 @@ public class FlightController {
       );
     }
 
-    log.info("{}", flight.get());
     modelMap.addAttribute("flight", flight.get());
 
     return "flights-edit-form";
@@ -110,7 +125,7 @@ public class FlightController {
 
     flightService.updateFlight(flight);
 
-    return "redirect:/flights"; //TODO: change it to "redirect:/flights/{flight-number}"
+    return "redirect:/flights/" + flightNumber;
   }
 
   private void fillPage(ModelMap modelMap, int currentPageNumber, String sortByField) {

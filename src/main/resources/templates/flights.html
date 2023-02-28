@@ -40,8 +40,9 @@
 
         <tbody>
           <tr th:each="flight : ${flights}">
-            <td class="w-25">
-              <a th:text="${flight.flightNumber}">
+            <td>
+              <a th:text="${flight.flightNumber}"
+                 th:href="@{/flights/{flight-number}(flight-number=${flight.flightNumber})}">
                 flightNumber
               </a>
             </td>

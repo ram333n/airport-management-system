@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script th:inline="javascript" th:src="@{/js/deleteCrewMember.js}"></script>
+
+  <title>Flight</title>
+</head>
+
+<body>
+  <header th:replace="~{/navbar :: navbar}"></header>
+
+  <h1 class="text-center mt-5">Flight: <span th:text="${flight.flightNumber}">Flight number</span></h1>
+
+  <div class="container pt-5">
+    <div class="row">
+      <div class="col d-flex justify-content-center">
+        <dl>
+          <dt>Flight number:</dt>
+          <dd th:text="${flight.flightNumber}">passNumber</dd>
+
+          <dt>Departure from:</dt>
+          <dd th:text="${flight.departureFrom}">departureFrom</dd>
+
+          <dt>Destination:</dt>
+          <dd th:text="${flight.destination}">destination</dd>
+
+          <dt>Departure time:</dt>
+          <dd th:text="${#temporals.format(flight.departureTime, 'dd-MM-yyyy HH:mm')}">departureTime</dd>
+
+          <dt>Arrival time:</dt>
+          <dd th:text="${#temporals.format(flight.arrivalTime, 'dd-MM-yyyy HH:mm')}">arrivalTime</dd>
+        </dl>
+      </div>
+
+      <div class="col d-flex flex-column justify-content-center text-center">
+        <div class="p-1">
+          <a th:href="@{/flights/edit/{flight-number}(flight-number=${flight.flightNumber})}"
+             class="btn btn-primary w-25">
+            Edit
+          </a>
+        </div>
+
+        <div class="p-1">
+          <button th:flight-num="${flight.flightNumber}"
+                  th:onclick="deleteCrewMember(this.getAttribute('flight-num'))"
+                  class="btn btn-danger w-25">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-center">TODO: crew table</h1>
+  </div>
+
+  </body>
+</html>
