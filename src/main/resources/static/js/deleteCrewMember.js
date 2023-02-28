@@ -8,7 +8,6 @@ function deleteCrewMember(passNumber) {
   $.ajax({
     url: '/crew/' + passNumber,
     type: 'DELETE',
-    dataType: 'html',
     success: (data) => {
       window.location.href = '/crew'
     }

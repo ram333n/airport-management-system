@@ -17,15 +17,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Slf4j
 @Controller
@@ -126,6 +129,18 @@ public class FlightController {
     flightService.updateFlight(flight);
 
     return "redirect:/flights/" + flightNumber;
+  }
+
+  @DeleteMapping("/flights/{flight-number}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteFlight(@PathVariable("flight-number") String flightNumber) {
+    boolean isDeleted = flightService.deleteFlight(flightNumber);
+
+    if (!isDeleted) {
+      throw new FlightNotFoundException(
+          String.format("Flight with flight number %s not found", flightNumber)
+      );
+    }
   }
 
   private void fillPage(ModelMap modelMap, int currentPageNumber, String sortByField) {

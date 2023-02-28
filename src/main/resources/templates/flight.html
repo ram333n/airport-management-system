@@ -10,7 +10,7 @@
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
         crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-  <script th:inline="javascript" th:src="@{/js/deleteCrewMember.js}"></script>
+  <script th:inline="javascript" th:src="@{/js/deleteFlight.js}"></script>
 
   <title>Flight</title>
 </head>
@@ -51,7 +51,7 @@
 
         <div class="p-1">
           <button th:flight-num="${flight.flightNumber}"
-                  th:onclick="deleteCrewMember(this.getAttribute('flight-num'))"
+                  th:onclick="deleteFlight(this.getAttribute('flight-num'))"
                   class="btn btn-danger w-25">
             Delete
           </button>
@@ -62,5 +62,5 @@
     <h1 class="text-center">TODO: crew table</h1>
   </div>
 
-  </body>
+</body>
 </html>
