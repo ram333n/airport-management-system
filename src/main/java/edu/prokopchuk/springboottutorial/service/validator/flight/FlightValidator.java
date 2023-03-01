@@ -1,26 +1,37 @@
 package edu.prokopchuk.springboottutorial.service.validator.flight;
 
 import edu.prokopchuk.springboottutorial.model.Flight;
+import edu.prokopchuk.springboottutorial.repository.FlightRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
-@Component
-public class FlightDurationValidator implements Validator {
+@Service
+public class FlightValidator {
 
-  @Override
-  public boolean supports(Class<?> clazz) {
-    return Objects.equals(Flight.class, clazz);
+  private final FlightRepository flightRepository;
+
+  @Autowired
+  public FlightValidator(FlightRepository flightRepository) {
+    this.flightRepository = flightRepository;
   }
 
-  @Override
-  public void validate(Object target, Errors errors) {
-    Flight flight = (Flight) target;
+  public void validateFlightNumberUniqueness(Flight flight, Errors errors) {
+    String flightNumber = flight.getFlightNumber();
+
+    if (flightRepository.existsById(flightNumber)) {
+      errors.rejectValue("flightNumber",
+          "flightNumberIsNotUnique",
+          "Flight with this number already exists");
+    }
+  }
+
+  public void validateDurationBoundaries(Flight flight, Errors errors) {
     LocalDateTime departureTime = flight.getDepartureTime();
     LocalDateTime arrivalTime = flight.getArrivalTime();
 

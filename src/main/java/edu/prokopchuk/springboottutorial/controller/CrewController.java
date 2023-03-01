@@ -4,7 +4,7 @@ import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.service.CrewService;
-import edu.prokopchuk.springboottutorial.service.validator.crew.UniquePassNumberValidator;
+import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -35,15 +35,15 @@ public class CrewController {
 
   private final CrewService crewService;
   private final FrontendProperties frontendProperties;
-  private final UniquePassNumberValidator uniquePassNumberValidator;
+  private final CrewMemberValidator crewMemberValidator;
 
   @Autowired
   public CrewController(CrewService crewService,
                         FrontendProperties frontendProperties,
-                        UniquePassNumberValidator uniquePassNumberValidator) {
+                        CrewMemberValidator crewMemberValidator) {
     this.crewService = crewService;
     this.frontendProperties = frontendProperties;
-    this.uniquePassNumberValidator = uniquePassNumberValidator;
+    this.crewMemberValidator = crewMemberValidator;
   }
 
   @GetMapping("/crew")
@@ -84,7 +84,7 @@ public class CrewController {
   @PostMapping("/crew")
   public String createCrewMember(@Valid @ModelAttribute("crewMember") CrewMember crewMember,
                                  Errors errors) {
-    uniquePassNumberValidator.validate(crewMember, errors);
+    crewMemberValidator.validatePassNumberUniqueness(crewMember, errors);
 
     if (errors.hasErrors()) {
       return "crew-new-form";
