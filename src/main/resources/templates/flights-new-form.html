@@ -15,7 +15,7 @@
 <body>
   <header th:replace="~{/navbar :: navbar}"></header>
 
-  <h1 class="text-center mt-5">Create flight</h1>
+  <h1 class="text-center mt-5">Create new flight</h1>
 
   <div class="container w-25 mt-5">
     <form th:method="POST" th:action="@{/flights}" th:object="${flight}">
