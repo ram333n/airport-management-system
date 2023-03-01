@@ -12,11 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
+import edu.prokopchuk.springboottutorial.controller.util.TestUtils;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.enums.Position;
 import edu.prokopchuk.springboottutorial.service.CrewService;
-import edu.prokopchuk.springboottutorial.service.validator.crew.UniquePassNumberValidator;
-import java.io.UnsupportedEncodingException;
+import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -42,7 +42,7 @@ class CrewControllerTest {
   private CrewService crewService;
 
   @MockBean
-  private UniquePassNumberValidator uniquePassNumberValidator;
+  private CrewMemberValidator crewMemberValidator; //just to satisfy controller creation requirement
 
   @Autowired
   private CrewController crewController;
@@ -95,8 +95,9 @@ class CrewControllerTest {
             .build()
     );
 
+    int pageNumber = 0;
     int pageSize = frontendProperties.getCrewPageSize();
-    Pageable pageable = PageRequest.of(0, pageSize, Sort.by("passNumber"));
+    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("passNumber"));
 
     Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(crew));
 
@@ -105,7 +106,7 @@ class CrewControllerTest {
         .andExpect(model().attributeExists("crew"))
         .andExpect(view().name("crew"));
 
-    String content = extractContent(resultActions);
+    String content = TestUtils.extractContent(resultActions);
 
     assertTrue(content.contains("TEST-1"));
     assertTrue(content.contains("Test name 1"));
@@ -143,14 +144,15 @@ class CrewControllerTest {
 
     ResultActions resultActions = mockMvc.perform(get("/crew/{pass-number}", passNumber))
         .andExpect(status().isOk())
+        .andExpect(model().attributeExists("crewMember"))
         .andExpect(view().name("crew-member"));
 
-    String content = extractContent(resultActions);
+    String content = TestUtils.extractContent(resultActions);
 
-    assertTrue(content.contains(passNumber));
-    assertTrue(content.contains(crewMember.getName()));
-    assertTrue(content.contains(crewMember.getSurname()));
-    assertTrue(content.contains(crewMember.getPosition().toString()));
+    assertTrue(content.contains("TEST-1"));
+    assertTrue(content.contains("Test name"));
+    assertTrue(content.contains("Test surname"));
+    assertTrue(content.contains(Position.NAVIGATOR.toString()));
   }
 
   @Test
@@ -160,7 +162,7 @@ class CrewControllerTest {
         .andExpect(model().attributeExists("crewMember"))
         .andExpect(view().name("crew-new-form"));
 
-    String content = extractContent(resultActions);
+    String content = TestUtils.extractContent(resultActions);
 
     assertTrue(content.contains("Create new crew member"));
   }
@@ -176,9 +178,10 @@ class CrewControllerTest {
     ResultActions resultActions
         = mockMvc.perform(post("/crew").flashAttr("crewMember", crewMemberAttr))
         .andExpect(status().isOk())
+        .andExpect(model().attributeExists("crewMember"))
         .andExpect(view().name("crew-new-form"));
 
-    String content = extractContent(resultActions);
+    String content = TestUtils.extractContent(resultActions);
 
     assertTrue(content.contains("Pass number can not be blank"));
     assertTrue(content.contains("Pass number must contain at least 3 characters"));
@@ -218,7 +221,7 @@ class CrewControllerTest {
 
   @Test
   void showEditFormWorksProperly() throws Exception {
-    CrewMember crewMemberAttr = CrewMember.builder()
+    CrewMember crewMember = CrewMember.builder()
         .passNumber("TEST-1")
         .name("Test name")
         .surname("Test surname")
@@ -226,14 +229,14 @@ class CrewControllerTest {
         .build();
 
     Mockito.when(crewService.getCrewMember("TEST-1"))
-        .thenReturn(Optional.of(crewMemberAttr));
+        .thenReturn(Optional.of(crewMember));
 
     ResultActions resultActions
         = mockMvc.perform(get("/crew/edit/{path-variable}", "TEST-1"))
         .andExpect(status().isOk())
         .andExpect(view().name("crew-edit-form"));
 
-    String content = extractContent(resultActions);
+    String content = TestUtils.extractContent(resultActions);
 
     assertTrue(content.contains("TEST-1"));
     assertTrue(content.contains("Test name"));
@@ -243,19 +246,20 @@ class CrewControllerTest {
 
   @Test
   void editCrewMemberHasErrors() throws Exception {
+    String passNumber = "TEST-1";
     CrewMember crewMemberAttr = CrewMember.builder()
-        .passNumber("TEST-1")
+        .passNumber(passNumber)
         .name("")
         .surname("")
         .build();
 
     ResultActions resultActions
-        = mockMvc.perform(put("/crew/{pass-number}", "TEST-1")
+        = mockMvc.perform(put("/crew/{pass-number}", passNumber)
             .flashAttr("crewMember", crewMemberAttr))
         .andExpect(status().isOk())
         .andExpect(view().name("crew-edit-form"));
 
-    String content = extractContent(resultActions);
+    String content = TestUtils.extractContent(resultActions);
 
     assertTrue(content.contains("Name can not be blank"));
     assertTrue(content.contains("Name must contain at least 1 character"));
@@ -266,13 +270,15 @@ class CrewControllerTest {
 
   @Test
   void editCrewMemberWorksProperly() throws Exception {
+    String passNumber = "TEST-1";
     CrewMember crewMemberAttr = CrewMember.builder()
-        .passNumber("TEST-1")
+        .passNumber(passNumber)
         .name("Test name")
         .surname("Test surname")
         .build();
 
-    mockMvc.perform(put("/crew/TEST-1").flashAttr("crewMember", crewMemberAttr))
+    mockMvc.perform(put("/crew/{pass-number}", passNumber)
+            .flashAttr("crewMember", crewMemberAttr))
         .andExpect(status().isFound())
         .andExpect(view().name("redirect:/crew/TEST-1"))
         .andExpect(redirectedUrl("/crew/TEST-1"));
@@ -292,21 +298,15 @@ class CrewControllerTest {
   @Test
   void deleteCrewMemberWorksProperly() throws Exception {
     String passNumber = "TEST-1";
+    int pageNumber = 0;
     int pageSize = frontendProperties.getCrewPageSize();
-    Pageable pageable = PageRequest.of(0, pageSize);
+    Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
     Mockito.when(crewService.deleteCrewMember(passNumber)).thenReturn(true);
     Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(List.of()));
 
     mockMvc.perform(delete("/crew/{pass-number}", passNumber))
         .andExpect(status().isNoContent());
-  }
-
-  private String extractContent(ResultActions resultActions) throws UnsupportedEncodingException {
-    return resultActions
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
   }
 
 }

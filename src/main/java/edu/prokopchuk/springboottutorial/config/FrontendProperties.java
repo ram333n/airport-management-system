@@ -13,4 +13,7 @@ public class FrontendProperties {
   @Min(value = 1, message = "Page must contain at least 1 record")
   private int crewPageSize = 5;
 
+  @Min(value = 1, message = "Page must contain at least 1 record")
+  private int flightsPageSize = 5;
+
 }

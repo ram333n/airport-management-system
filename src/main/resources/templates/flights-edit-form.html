@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+        crossorigin="anonymous">
+
+  <title>Edit flight</title>
+</head>
+<body>
+  <header th:replace="~{/navbar :: navbar}"></header>
+
+  <h1 class="text-center mt-5">Edit flight</h1>
+
+  <div class="container w-25 mt-5">
+    <form th:method="PUT" th:action="@{/flights/{flight-number}(flight-number=${flight.flightNumber})}" th:object="${flight}">
+      <div class="mb-3">
+        <label for="flightNumberInput" class="form-label">Flight number</label>
+        <input th:field="*{flightNumber}"
+               type="text"
+               class="form-control"
+               id="flightNumberInput"
+               placeholder="FLT-123"
+               readonly>
+      </div>
+
+      <div class="mb-3">
+        <label for="departureFromInput" class="form-label">Departure from</label>
+        <input th:field="*{departureFrom}"
+               type="text"
+               class="form-control"
+               id="departureFromInput"
+               placeholder="Kyiv">
+        <span th:unless="${#fields.hasErrors('departureFrom')}" class="form-text text-muted">
+          Departure city must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('departureFrom')}">
+          <li th:each="error : ${#fields.errors('departureFrom')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-3">
+        <label for="destinationInput" class="form-label">Destination</label>
+        <input th:field="*{destination}"
+               type="text"
+               class="form-control"
+               id="destinationInput"
+               placeholder="Lviv">
+        <span th:unless="${#fields.hasErrors('destination')}" class="form-text text-muted">
+          Destination city must not be blank and contain from 1 to 255 characters
+        </span>
+        <ul th:if="${#fields.hasErrors('destination')}">
+          <li th:each="error : ${#fields.errors('destination')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-3">
+        <label for="departureTimeInput" class="form-label">Departure time</label>
+        <input th:field="*{departureTime}"
+               th:value="${flight.departureTime}"
+               type="datetime-local"
+               class="form-control"
+               id="departureTimeInput">
+        <span th:unless="${#fields.hasErrors('departureTime')}" class="form-text text-muted">
+          Departure time must be in the future, not blank and after arrival time
+        </span>
+        <ul th:if="${#fields.hasErrors('departureTime')}">
+          <li th:each="error : ${#fields.errors('departureTime')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
+      </div>
+
+      <div class="mb-3">
+        <label for="arrivalTimeInput" class="form-label">Arrival time</label>
+        <input th:field="*{arrivalTime}"
+               th:value="${flight.arrivalTime}"
+               type="datetime-local"
+               class="form-control"
+               id="arrivalTimeInput">
+        <span th:unless="${#fields.hasErrors('arrivalTime')}" class="form-text text-muted">
+          Arrival time must be in future and not blank
+        </span>
+        <ul th:if="${#fields.hasErrors('arrivalTime')}">
+          <li th:each="error : ${#fields.errors('arrivalTime')}"
+              th:text="${error}"
+              class="form-text text-danger">
+            Error
+          </li>
+        </ul>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</body>
+</html>

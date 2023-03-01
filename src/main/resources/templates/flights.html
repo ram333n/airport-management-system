@@ -10,20 +10,20 @@
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
         crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
-  <script th:inline="javascript" th:src="@{/js/deleteCrewMember.js}"></script>
+  <script th:inline="javascript" th:src="@{/js/deleteFlight.js}"></script>
 
-  <title>Crew members</title>
+  <title>Flights</title>
 </head>
 
 <body>
   <header th:replace="~{/navbar :: navbar}"></header>
 
-  <h1 class="text-center mt-5">Crew members</h1>
+  <h1 class="text-center mt-5">Flights</h1>
 
   <div class="container">
     <div class="row w-25 pb-1">
-      <a th:href="@{/crew/new}" class="btn btn-success">
-        Create member
+      <a th:href="@{/flights/new}" class="btn btn-success">
+        Create flight
       </a>
     </div>
 
@@ -31,34 +31,36 @@
       <table class="table table-hover table-info table-striped">
         <thead class="table-dark">
           <tr>
-            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'passNumber')}">Pass number</a></th>
-            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'name')}">Name</a></th>
-            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'surname')}">Surname</a></th>
-            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'position')}">Position</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'flightNumber')}">Flight number</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'departureFrom')}">Departure from</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'destination')}">Destination</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'departureTime')}">Departure time</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'arrivalTime')}">Arrival time</a></th>
             <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          <tr th:each="member : ${crew}">
+          <tr th:each="flight : ${flights}">
             <td>
-              <a th:text="${member.passNumber}"
-                 th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
-                passNumber
+              <a th:text="${flight.flightNumber}"
+                 th:href="@{/flights/{flight-number}(flight-number=${flight.flightNumber})}">
+                flightNumber
               </a>
             </td>
-            <td th:text="${member.name}">name</td>
-            <td th:text="${member.surname}">surname</td>
-            <td th:text="${member.position}">position</td>
+            <td th:text="${flight.departureFrom}">departureFrom</td>
+            <td th:text="${flight.destination}">destination</td>
+            <td th:text="${#temporals.format(flight.departureTime, 'dd-MM-yyyy HH:mm')}">departureTime</td>
+            <td th:text="${#temporals.format(flight.arrivalTime, 'dd-MM-yyyy HH:mm')}">arrivalTime</td>
             <td>
-              <a th:href="@{/crew/edit/{pass-number}(pass-number=${member.passNumber})}"
+              <a th:href="@{/flights/edit/{flight-number}(flight-number=${flight.flightNumber})}"
                  class="btn btn-primary">
                 Edit
               </a>
 
-              <button th:pass-num="${member.passNumber}"
-                      th:onclick="deleteCrewMember(this.getAttribute('pass-num'))"
-                      class="btn btn-danger">
+              <button class="btn btn-danger"
+                      th:flight-num="${flight.flightNumber}"
+                      th:onclick="deleteFlight(this.getAttribute('flight-num'))">
                 Delete
               </button>
             </td>
@@ -84,8 +86,8 @@
         </li>
 
         <li class="page-item">
-          <a th:class="'page-link ' + ${currentPageNumber == crew.getTotalPages()
-                       || crew.getTotalPages() == 0 ? 'disabled' : ''}"
+          <a th:class="'page-link ' + ${currentPageNumber == flights.getTotalPages()
+                       || flights.getTotalPages() == 0 ? 'disabled' : ''}"
              th:href="${@replaceOrAddParam.apply('page', #strings.toString(currentPageNumber + 1))}">
             Next
           </a>
