@@ -59,8 +59,68 @@
       </div>
     </div>
 
-    <h1 class="text-center">TODO: crew table</h1>
-  </div>
+    <h1 class="text-center">Crew</h1>
 
+    <div class="row justify-content-center mt-5">
+      <table class="table table-hover table-info table-striped">
+        <thead class="table-dark">
+        <tr>
+          <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'passNumber')}">Pass number</a></th>
+          <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'name')}">Name</a></th>
+          <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'surname')}">Surname</a></th>
+          <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'position')}">Position</a></th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="member : ${crew}">
+          <td>
+            <a th:text="${member.passNumber}"
+               th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
+              passNumber
+            </a>
+          </td>
+          <td th:text="${member.name}">name</td>
+          <td th:text="${member.surname}">surname</td>
+          <td th:text="${member.position}">position</td>
+          <td>
+            <button th:pass-num="${member.passNumber}"
+                    th:onclick="deleteCrewMember(this.getAttribute('pass-num'))"
+                    class="btn btn-danger">
+              Remove
+            </button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <nav>
+      <ul class="pagination">
+        <li class="page-item">
+          <a th:class="'page-link ' + ${currentPageNumber == 1 ? 'disabled' : ''}"
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(currentPageNumber - 1))}">
+            Previous
+          </a>
+        </li>
+
+        <li class="page-item" th:each="page : ${pageNumbers}">
+          <a th:class="'page-link ' + ${page == currentPageNumber ? 'active' : ''}"
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(page))}"
+             th:text="${page}">
+          </a>
+        </li>
+
+        <li class="page-item">
+          <a th:class="'page-link ' + ${currentPageNumber == crew.getTotalPages()
+                       || crew.getTotalPages() == 0 ? 'disabled' : ''}"
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(currentPageNumber + 1))}">
+            Next
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
 </body>
 </html>

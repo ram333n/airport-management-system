@@ -3,6 +3,7 @@ package edu.prokopchuk.springboottutorial.controller;
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
+import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
@@ -67,16 +68,29 @@ public class CrewController {
 
   @GetMapping("/crew/{pass-number}")
   public String showCrewMember(@PathVariable("pass-number") String passNumber,
-                               ModelMap modelMap) {
-    Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
+                               ModelMap modelMap,
+                               @RequestParam("page") Optional<Integer> page,
+                               @RequestParam("sortby") Optional<String> sortBy) {
+    Optional<CrewMember> crewMemberOptional = crewService.getCrewMember(passNumber);
 
-    if (crewMember.isEmpty()) {
+    if (crewMemberOptional.isEmpty()) {
       throw new CrewMemberNotFoundException(
           String.format("Crew member with pass number %s not found", passNumber)
       );
     }
 
-    modelMap.addAttribute("crewMember", crewMember.get());
+    CrewMember crewMember = crewMemberOptional.get();
+    int currentPageNumber = page.orElse(1);
+    int pageSize = frontendProperties.getFlightsOfCrewMemberPageSize();
+    String sortByField = sortBy.orElse("flightNumber");
+
+    Sort sort = Sort.by(sortByField);
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, pageSize, sort);
+
+    Page<Flight> flights = flightService.getFlightsOfCrewMember(crewMember, pageable);
+
+    modelMap.addAttribute("crewMember", crewMemberOptional.get());
+    ViewUtils.fillPageWithTable(modelMap, flights, "flights");
 
     return "crew-member";
   }

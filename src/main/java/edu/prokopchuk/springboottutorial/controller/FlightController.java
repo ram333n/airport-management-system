@@ -2,6 +2,7 @@ package edu.prokopchuk.springboottutorial.controller;
 
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.FlightNotFoundException;
+import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import edu.prokopchuk.springboottutorial.service.FlightService;
@@ -65,18 +66,32 @@ public class FlightController {
     return "flights";
   }
 
+  //TODO: fix foreign key constraint fail
   @GetMapping("/flights/{flight-number}")
   public String getFlight(@PathVariable("flight-number") String flightNumber,
-                          ModelMap modelMap) {
-    Optional<Flight> flight = flightService.getFlight(flightNumber);
+                          ModelMap modelMap,
+                          @RequestParam("page") Optional<Integer> page,
+                          @RequestParam("sortby") Optional<String> sortBy) {
+    Optional<Flight> flightOptional = flightService.getFlight(flightNumber);
 
-    if (flight.isEmpty()) {
+    if (flightOptional.isEmpty()) {
       throw new FlightNotFoundException(
           String.format("Flight with flight number %s not found", flightNumber)
       );
     }
 
-    modelMap.addAttribute("flight", flight.get());
+    Flight flight = flightOptional.get();
+    int currentPageNumber = page.orElse(1);
+    int pageSize = frontendProperties.getCrewOfFlightPageSize();
+    String sortByField = sortBy.orElse("passNumber");
+
+    Sort sort = Sort.by(sortByField);
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, pageSize, sort);
+
+    Page<CrewMember> crew = crewService.getCrewOfFlight(flight, pageable);
+
+    modelMap.addAttribute("flight", flight);
+    ViewUtils.fillPageWithTable(modelMap, crew, "crew");
 
     return "flight";
   }

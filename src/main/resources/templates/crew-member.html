@@ -56,7 +56,68 @@
       </div>
     </div>
 
-    <h1 class="text-center">TODO: flights table</h1>
+    <h1 class="text-center mt-2">Flights</h1>
+
+    <div class="row justify-content-center mt-5">
+      <table class="table table-hover table-info table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'flightNumber')}">Flight number</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'departureFrom')}">Departure from</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'destination')}">Destination</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'departureTime')}">Departure time</a></th>
+            <th><a class="text-light" th:href="${@replaceOrAddParam.apply('sortby', 'arrivalTime')}">Arrival time</a></th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr th:each="flight : ${flights}">
+            <td>
+              <a th:text="${flight.flightNumber}"
+                 th:href="@{/flights/{flight-number}(flight-number=${flight.flightNumber})}">
+                flightNumber
+              </a>
+            </td>
+            <td th:text="${flight.departureFrom}">departureFrom</td>
+            <td th:text="${flight.destination}">destination</td>
+            <td th:text="${#temporals.format(flight.departureTime, 'dd-MM-yyyy HH:mm')}">departureTime</td>
+            <td th:text="${#temporals.format(flight.arrivalTime, 'dd-MM-yyyy HH:mm')}">arrivalTime</td>
+            <td>
+              <button class="btn btn-danger">
+                Remove
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <nav>
+      <ul class="pagination">
+        <li class="page-item">
+          <a th:class="'page-link ' + ${currentPageNumber == 1 ? 'disabled' : ''}"
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(currentPageNumber - 1))}">
+            Previous
+          </a>
+        </li>
+
+        <li class="page-item" th:each="page : ${pageNumbers}">
+          <a th:class="'page-link ' + ${page == currentPageNumber ? 'active' : ''}"
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(page))}"
+             th:text="${page}">
+          </a>
+        </li>
+
+        <li class="page-item">
+          <a th:class="'page-link ' + ${currentPageNumber == flights.getTotalPages()
+                       || flights.getTotalPages() == 0 ? 'disabled' : ''}"
+             th:href="${@replaceOrAddParam.apply('page', #strings.toString(currentPageNumber + 1))}">
+            Next
+          </a>
+        </li>
+      </ul>
+    </nav>
   </div>
 
 </body>
