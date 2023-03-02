@@ -1,6 +1,7 @@
 package edu.prokopchuk.springboottutorial.service;
 
 import edu.prokopchuk.springboottutorial.model.CrewMember;
+import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.repository.CrewRepository;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,10 @@ public class CrewService {
 
   public Page<CrewMember> getCrewPage(Pageable pageable) {
     return crewRepository.findAll(pageable);
+  }
+
+  public Page<CrewMember> getCrewOfFlight(Flight flight, Pageable pageable) {
+    return crewRepository.findByFlights(flight, pageable);
   }
 
   @Transactional

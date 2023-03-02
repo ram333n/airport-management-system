@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.Flight;
+import edu.prokopchuk.springboottutorial.repository.CrewRepository;
 import edu.prokopchuk.springboottutorial.repository.FlightRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,11 +36,15 @@ class FlightServiceTest {
   private FlightRepository flightRepository;
 
   @Autowired
+  private CrewRepository crewRepository;
+
+  @Autowired
   private FlightService flightService;
 
   @Test
   void contextLoads() {
     assertNotNull(flightRepository);
+    assertNotNull(crewRepository);
     assertNotNull(flightService);
   }
 
@@ -78,6 +83,23 @@ class FlightServiceTest {
     Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("destination"));
 
     Page<Flight> page = flightService.getFlightPage(pageable);
+    List<Flight> flights = page.toList();
+
+    assertEquals(2, flights.size());
+    assertEquals("Berlin", flights.get(0).getDestination());
+    assertEquals("Krakow", flights.get(1).getDestination());
+  }
+
+  @Test
+  void getFlightsOfCrewMemberWorksProperly() {
+    int pageNumber = 0;
+    int pageSize = 3;
+    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("destination"));
+
+    Optional<CrewMember> crewMemberOptional = crewRepository.findById("PLT-123");
+    CrewMember crewMember = crewMemberOptional.get();
+
+    Page<Flight> page = flightService.getFlightsOfCrewMember(crewMember, pageable);
     List<Flight> flights = page.toList();
 
     assertEquals(2, flights.size());
