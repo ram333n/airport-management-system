@@ -4,12 +4,11 @@ import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.service.CrewService;
+import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
+import edu.prokopchuk.springboottutorial.util.ViewUtils;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,14 +33,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class CrewController {
 
   private final CrewService crewService;
+  private final FlightService flightService;
   private final FrontendProperties frontendProperties;
   private final CrewMemberValidator crewMemberValidator;
 
   @Autowired
   public CrewController(CrewService crewService,
+                        FlightService flightService,
                         FrontendProperties frontendProperties,
                         CrewMemberValidator crewMemberValidator) {
     this.crewService = crewService;
+    this.flightService = flightService;
     this.frontendProperties = frontendProperties;
     this.crewMemberValidator = crewMemberValidator;
   }
@@ -51,9 +53,14 @@ public class CrewController {
                          @RequestParam("page") Optional<Integer> page,
                          @RequestParam("sortby") Optional<String> sortBy) {
     int currentPageNumber = page.orElse(1);
+    int pageSize = frontendProperties.getCrewPageSize();
     String sortByField = sortBy.orElse("passNumber");
 
-    fillPage(modelMap, currentPageNumber, sortByField);
+    Sort sort = Sort.by(sortByField);
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, pageSize, sort);
+
+    Page<CrewMember> content = crewService.getCrewPage(pageable);
+    ViewUtils.fillPageWithTable(modelMap, content, "crew");
 
     return "crew";
   }
@@ -133,25 +140,6 @@ public class CrewController {
       throw new CrewMemberNotFoundException(
           String.format("Crew member with pass number %s not found", passNumber)
       );
-    }
-  }
-
-  private void fillPage(ModelMap modelMap, int currentPageNumber, String sortByField) {
-    int size = frontendProperties.getCrewPageSize();
-    Sort sort = Sort.by(sortByField);
-    Pageable pageable = PageRequest.of(currentPageNumber - 1, size, sort);
-
-    Page<CrewMember> page = crewService.getCrewPage(pageable);
-    modelMap.addAttribute("crew", page);
-    modelMap.addAttribute("currentPageNumber", currentPageNumber);
-
-    int totalPages = page.getTotalPages();
-
-    if (totalPages > 0) {
-      List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-          .boxed()
-          .collect(Collectors.toList());
-      modelMap.addAttribute("pageNumbers", pageNumbers);
     }
   }
 
