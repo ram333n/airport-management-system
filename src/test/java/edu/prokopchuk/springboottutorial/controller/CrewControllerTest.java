@@ -16,6 +16,7 @@ import edu.prokopchuk.springboottutorial.controller.util.TestUtils;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.enums.Position;
 import edu.prokopchuk.springboottutorial.service.CrewService;
+import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +41,9 @@ class CrewControllerTest {
 
   @MockBean
   private CrewService crewService;
+
+  @MockBean
+  private FlightService flightService;
 
   @MockBean
   private CrewMemberValidator crewMemberValidator; //just to satisfy controller creation requirement
@@ -99,7 +103,8 @@ class CrewControllerTest {
     int pageSize = frontendProperties.getCrewPageSize();
     Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("passNumber"));
 
-    Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(crew));
+    Mockito.when(crewService.getCrewPage(pageable))
+        .thenReturn(new PageImpl<>(crew, pageable, crew.size()));
 
     ResultActions resultActions = mockMvc.perform(get("/crew"))
         .andExpect(status().isOk())

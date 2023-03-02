@@ -15,6 +15,7 @@ import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.controller.util.TestUtils;
 import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.repository.FlightRepository;
+import edu.prokopchuk.springboottutorial.service.CrewService;
 import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.flight.FlightValidator;
 import java.time.LocalDateTime;
@@ -45,6 +46,9 @@ class FlightControllerTest {
 
   @MockBean
   private FlightService flightService;
+
+  @MockBean
+  private CrewService crewService;
 
   @MockBean
   private FlightRepository flightRepository; //just to satisfy validator creation requirement
@@ -117,7 +121,8 @@ class FlightControllerTest {
     int pageSize = frontendProperties.getCrewPageSize();
     Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("flightNumber"));
 
-    Mockito.when(flightService.getFlightPage(pageable)).thenReturn(new PageImpl<>(flights));
+    Mockito.when(flightService.getFlightPage(pageable))
+        .thenReturn(new PageImpl<>(flights, pageable, flights.size()));
 
     ResultActions resultActions = mockMvc.perform(get("/flights"))
         .andExpect(status().isOk())
