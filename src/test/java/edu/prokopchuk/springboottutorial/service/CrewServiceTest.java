@@ -62,7 +62,7 @@ class CrewServiceTest {
     Optional<CrewMember> actual = crewService.getCrewMember(passNumber);
 
     assertTrue(actual.isPresent());
-    assertEquals(toCreate, actual.get());
+    assertEquals(passNumber, actual.get().getPassNumber());
   }
 
   @Test

@@ -15,10 +15,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,7 +30,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
-@EqualsAndHashCode
 @Entity
 @Table(name = "crew_members")
 public class CrewMember {
@@ -72,6 +71,25 @@ public class CrewMember {
     for (Flight flight : flights) {
       flight.getCrew().remove(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    CrewMember that = (CrewMember) o;
+    return Objects.equals(passNumber, that.passNumber);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(passNumber);
   }
 
 }

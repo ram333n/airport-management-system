@@ -12,10 +12,10 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,7 +28,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 @AllArgsConstructor
 @Builder
 @ToString
-@EqualsAndHashCode
 @Entity
 @Table(name = "flights")
 public class Flight {
@@ -71,6 +70,25 @@ public class Flight {
     for (CrewMember crewMember : crew) {
       crewMember.getFlights().remove(this);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Flight that = (Flight) o;
+    return Objects.equals(flightNumber, that.flightNumber);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(flightNumber);
   }
 
 }
