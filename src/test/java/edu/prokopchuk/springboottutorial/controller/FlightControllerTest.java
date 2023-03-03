@@ -13,7 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.controller.util.TestUtils;
+import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.Flight;
+import edu.prokopchuk.springboottutorial.model.enums.Position;
 import edu.prokopchuk.springboottutorial.repository.FlightRepository;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import edu.prokopchuk.springboottutorial.service.FlightService;
@@ -167,7 +169,22 @@ class FlightControllerTest {
         .arrivalTime(arrivalTime)
         .build();
 
+    List<CrewMember> crew = List.of(
+        CrewMember.builder()
+            .passNumber("TESTMBR-1")
+            .name("Test name")
+            .surname("Test surname")
+            .position(Position.NAVIGATOR)
+            .build()
+    );
+
+    int pageNumber = 0;
+    int pageSize = frontendProperties.getCrewOfFlightPageSize();
+    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("passNumber"));
+
     Mockito.when(flightService.getFlight(flightNumber)).thenReturn(Optional.of(flight));
+    Mockito.when(crewService.getCrewOfFlight(flight, pageable))
+        .thenReturn(new PageImpl<>(crew, pageable, crew.size()));
 
     ResultActions resultActions
         = mockMvc.perform(get("/flights/{flight-number}", flightNumber))
@@ -182,6 +199,11 @@ class FlightControllerTest {
     assertTrue(content.contains("Odesa"));
     assertTrue(content.contains(departureTime.format(FORMATTER)));
     assertTrue(content.contains(arrivalTime.format(FORMATTER)));
+
+    assertTrue(content.contains("TESTMBR-1"));
+    assertTrue(content.contains("Test name"));
+    assertTrue(content.contains("Test surname"));
+    assertTrue(content.contains(Position.NAVIGATOR.toString()));
   }
 
   @Test

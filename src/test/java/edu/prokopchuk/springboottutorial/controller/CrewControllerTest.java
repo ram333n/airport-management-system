@@ -14,10 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.controller.util.TestUtils;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
+import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.model.enums.Position;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -28,6 +30,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -145,7 +148,23 @@ class CrewControllerTest {
         .position(Position.NAVIGATOR)
         .build();
 
+    List<Flight> flights = List.of(
+        Flight.builder()
+            .flightNumber("TESTFLT-1")
+            .departureFrom("Kyiv")
+            .destination("Odesa")
+            .departureTime(LocalDateTime.now().plusHours(1L))
+            .arrivalTime(LocalDateTime.now().plusHours(6L))
+            .build()
+    );
+
+    int pageNumber = 0;
+    int pageSize = frontendProperties.getFlightsOfCrewMemberPageSize();
+    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("flightNumber"));
+
     Mockito.when(crewService.getCrewMember(passNumber)).thenReturn(Optional.of(crewMember));
+    Mockito.when(flightService.getFlightsOfCrewMember(crewMember, pageable))
+        .thenReturn(new PageImpl<>(flights, pageable, flights.size()));
 
     ResultActions resultActions = mockMvc.perform(get("/crew/{pass-number}", passNumber))
         .andExpect(status().isOk())
@@ -158,6 +177,10 @@ class CrewControllerTest {
     assertTrue(content.contains("Test name"));
     assertTrue(content.contains("Test surname"));
     assertTrue(content.contains(Position.NAVIGATOR.toString()));
+
+    assertTrue(content.contains("TESTFLT-1"));
+    assertTrue(content.contains("Kyiv"));
+    assertTrue(content.contains("Odesa"));
   }
 
   @Test
