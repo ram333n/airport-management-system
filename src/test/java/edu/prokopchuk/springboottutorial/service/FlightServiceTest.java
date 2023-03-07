@@ -97,7 +97,7 @@ class FlightServiceTest {
     Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("destination"));
 
     Optional<CrewMember> crewMemberOptional = crewRepository.findById("PLT-123");
-    CrewMember crewMember = crewMemberOptional.get();
+    CrewMember crewMember = crewMemberOptional.orElseThrow();
 
     Page<Flight> page = flightService.getFlightsOfCrewMember(crewMember, pageable);
     List<Flight> flights = page.toList();

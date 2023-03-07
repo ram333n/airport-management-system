@@ -66,8 +66,19 @@ public class CrewMember {
   )
   private Set<Flight> flights = new HashSet<>();
 
+  public void addFlight(Flight flight) {
+    flights.add(flight);
+    flight.getCrew().add(this);
+  }
+
+  public boolean removeFlight(Flight flight) {
+    flights.remove(flight);
+
+    return flight.getCrew().remove(this);
+  }
+
   @PreRemove
-  private void removeFlights() {
+  private void removeCrewMemberFromFlights() {
     for (Flight flight : flights) {
       flight.getCrew().remove(this);
     }
@@ -84,6 +95,7 @@ public class CrewMember {
     }
 
     CrewMember that = (CrewMember) o;
+
     return Objects.equals(passNumber, that.passNumber);
   }
 

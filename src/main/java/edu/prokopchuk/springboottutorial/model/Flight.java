@@ -66,7 +66,7 @@ public class Flight {
   private Set<CrewMember> crew = new HashSet<>();
 
   @PreRemove
-  private void removeFlightsFromCrewMembers() {
+  private void removeFlightFromCrewMembers() {
     for (CrewMember crewMember : crew) {
       crewMember.getFlights().remove(this);
     }
@@ -83,6 +83,7 @@ public class Flight {
     }
 
     Flight that = (Flight) o;
+
     return Objects.equals(flightNumber, that.flightNumber);
   }
 
