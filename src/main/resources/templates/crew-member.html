@@ -11,6 +11,7 @@
         crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <script th:inline="javascript" th:src="@{/js/deleteCrewMember.js}"></script>
+  <script th:inline="javascript" th:src="@{/js/unlinkFlightFromCrewMember.js}"></script>
 
   <title>Crew member</title>
 </head>
@@ -84,8 +85,14 @@
             <td th:text="${#temporals.format(flight.departureTime, 'dd-MM-yyyy HH:mm')}">departureTime</td>
             <td th:text="${#temporals.format(flight.arrivalTime, 'dd-MM-yyyy HH:mm')}">arrivalTime</td>
             <td>
-              <button class="btn btn-danger">
-                Remove
+              <button th:pass-num="${crewMember.passNumber}"
+                      th:flight-num="${flight.flightNumber}"
+                      th:onclick="unlinkFlightFromCrewMember(
+                        this.getAttribute('pass-num'),
+                        this.getAttribute('flight-num')
+                      )"
+                      class="btn btn-danger">
+                Unlink
               </button>
             </td>
           </tr>

@@ -11,6 +11,7 @@
         crossorigin="anonymous">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
   <script th:inline="javascript" th:src="@{/js/deleteFlight.js}"></script>
+  <script th:inline="javascript" th:src="@{/js/unlinkCrewMemberFromFlight.js}"></script>
 
   <title>Flight</title>
 </head>
@@ -74,24 +75,28 @@
         </thead>
 
         <tbody>
-        <tr th:each="member : ${crew}">
-          <td>
-            <a th:text="${member.passNumber}"
-               th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
-              passNumber
-            </a>
-          </td>
-          <td th:text="${member.name}">name</td>
-          <td th:text="${member.surname}">surname</td>
-          <td th:text="${member.position}">position</td>
-          <td>
-            <button th:pass-num="${member.passNumber}"
-                    th:onclick="deleteCrewMember(this.getAttribute('pass-num'))"
-                    class="btn btn-danger">
-              Remove
-            </button>
-          </td>
-        </tr>
+          <tr th:each="member : ${crew}">
+            <td>
+              <a th:text="${member.passNumber}"
+                 th:href="@{/crew/{pass-number}(pass-number=${member.passNumber})}">
+                passNumber
+              </a>
+            </td>
+            <td th:text="${member.name}">name</td>
+            <td th:text="${member.surname}">surname</td>
+            <td th:text="${member.position}">position</td>
+            <td>
+              <button th:pass-num="${member.passNumber}"
+                      th:flight-num="${flight.flightNumber}"
+                      th:onclick="unlinkCrewMemberFromFlight(
+                        this.getAttribute('flight-num'),
+                        this.getAttribute('pass-num')
+                      )"
+                      class="btn btn-danger">
+                Unlink
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

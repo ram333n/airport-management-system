@@ -16,6 +16,7 @@ import edu.prokopchuk.springboottutorial.controller.util.TestUtils;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.model.enums.Position;
+import edu.prokopchuk.springboottutorial.service.CrewFlightsLinkService;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
@@ -47,6 +48,9 @@ class CrewControllerTest {
 
   @MockBean
   private FlightService flightService;
+
+  @MockBean
+  private CrewFlightsLinkService crewFlightsLinkService;
 
   @MockBean
   private CrewMemberValidator crewMemberValidator; //just to satisfy controller creation requirement
@@ -334,6 +338,31 @@ class CrewControllerTest {
     Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(List.of()));
 
     mockMvc.perform(delete("/crew/{pass-number}", passNumber))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void deleteFlightOfCrewMemberThrowsAnException() throws Exception {
+    String passNumber = "TESTMBR-1";
+    String flightNumber = "TESTFLT-1";
+
+    Mockito.when(crewFlightsLinkService.unlinkCrewMemberAndFlight(passNumber, flightNumber))
+        .thenReturn(false);
+
+    mockMvc.perform(delete("/crew/{pass-number}/flights/{flight-number}", passNumber, flightNumber))
+        .andExpect(status().isNotFound())
+        .andExpect(view().name("no-such-flight-for-crew-member"));
+  }
+
+  @Test
+  void deleteFlightOfCrewMemberWorksProperly() throws Exception {
+    String passNumber = "TESTMBR-1";
+    String flightNumber = "TESTFLT-1";
+
+    Mockito.when(crewFlightsLinkService.unlinkCrewMemberAndFlight(passNumber, flightNumber))
+        .thenReturn(true);
+
+    mockMvc.perform(delete("/crew/{pass-number}/flights/{flight-number}", passNumber, flightNumber))
         .andExpect(status().isNoContent());
   }
 

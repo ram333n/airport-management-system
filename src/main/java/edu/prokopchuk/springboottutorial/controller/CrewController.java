@@ -2,8 +2,10 @@ package edu.prokopchuk.springboottutorial.controller;
 
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
+import edu.prokopchuk.springboottutorial.exception.NoSuchFlightForCrewMemberException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.Flight;
+import edu.prokopchuk.springboottutorial.service.CrewFlightsLinkService;
 import edu.prokopchuk.springboottutorial.service.CrewService;
 import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
@@ -35,16 +37,19 @@ public class CrewController {
 
   private final CrewService crewService;
   private final FlightService flightService;
+  private final CrewFlightsLinkService crewFlightsLinkService;
   private final FrontendProperties frontendProperties;
   private final CrewMemberValidator crewMemberValidator;
 
   @Autowired
   public CrewController(CrewService crewService,
                         FlightService flightService,
+                        CrewFlightsLinkService crewFlightsLinkService,
                         FrontendProperties frontendProperties,
                         CrewMemberValidator crewMemberValidator) {
     this.crewService = crewService;
     this.flightService = flightService;
+    this.crewFlightsLinkService = crewFlightsLinkService;
     this.frontendProperties = frontendProperties;
     this.crewMemberValidator = crewMemberValidator;
   }
@@ -153,6 +158,23 @@ public class CrewController {
     if (!isDeleted) {
       throw new CrewMemberNotFoundException(
           String.format("Crew member with pass number %s not found", passNumber)
+      );
+    }
+  }
+
+  @DeleteMapping("/crew/{pass-number}/flights/{flight-number}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteFlightOfCrewMember(@PathVariable("pass-number") String passNumber,
+                                       @PathVariable("flight-number") String flightNumber) {
+    boolean isDeleted = crewFlightsLinkService.unlinkCrewMemberAndFlight(passNumber, flightNumber);
+
+    if (!isDeleted) {
+      throw new NoSuchFlightForCrewMemberException(
+          String.format(
+              "Crew member with pass number %s does not have flight with number %s",
+              passNumber,
+              flightNumber
+          )
       );
     }
   }
