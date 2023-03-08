@@ -23,7 +23,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 
 @Getter
 @Setter
@@ -67,8 +66,19 @@ public class CrewMember {
   )
   private Set<Flight> flights = new HashSet<>();
 
+  public void addFlight(Flight flight) {
+    flights.add(flight);
+    flight.getCrew().add(this);
+  }
+
+  public boolean removeFlight(Flight flight) {
+    flights.remove(flight);
+
+    return flight.getCrew().remove(this);
+  }
+
   @PreRemove
-  private void removeFlights() {
+  private void removeCrewMemberFromFlights() {
     for (Flight flight : flights) {
       flight.getCrew().remove(this);
     }
@@ -80,17 +90,18 @@ public class CrewMember {
       return true;
     }
 
-    if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
 
     CrewMember that = (CrewMember) o;
+
     return Objects.equals(passNumber, that.passNumber);
   }
 
   @Override
   public int hashCode() {
-    return getClass().hashCode();
+    return Objects.hashCode(passNumber);
   }
 
 }

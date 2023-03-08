@@ -1,5 +1,6 @@
 package edu.prokopchuk.springboottutorial.service;
 
+import edu.prokopchuk.springboottutorial.model.CrewMember;
 import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.repository.FlightRepository;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class FlightService {
 
   private final FlightRepository flightRepository;
@@ -30,6 +32,10 @@ public class FlightService {
 
   public Page<Flight> getFlightPage(Pageable pageable) {
     return flightRepository.findAll(pageable);
+  }
+
+  public Page<Flight> getFlightsOfCrewMember(CrewMember crewMember, Pageable pageable) {
+    return flightRepository.findByCrew(crewMember, pageable);
   }
 
   @Transactional

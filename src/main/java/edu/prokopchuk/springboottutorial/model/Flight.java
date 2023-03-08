@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.Hibernate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
@@ -67,7 +66,7 @@ public class Flight {
   private Set<CrewMember> crew = new HashSet<>();
 
   @PreRemove
-  private void removeFlightsFromCrewMembers() {
+  private void removeFlightFromCrewMembers() {
     for (CrewMember crewMember : crew) {
       crewMember.getFlights().remove(this);
     }
@@ -79,17 +78,18 @@ public class Flight {
       return true;
     }
 
-    if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
 
     Flight that = (Flight) o;
+
     return Objects.equals(flightNumber, that.flightNumber);
   }
 
   @Override
   public int hashCode() {
-    return getClass().hashCode();
+    return Objects.hashCode(flightNumber);
   }
 
 }

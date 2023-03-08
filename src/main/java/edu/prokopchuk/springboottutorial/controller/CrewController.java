@@ -2,14 +2,16 @@ package edu.prokopchuk.springboottutorial.controller;
 
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.exception.CrewMemberNotFoundException;
+import edu.prokopchuk.springboottutorial.exception.NoSuchFlightForCrewMemberException;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
+import edu.prokopchuk.springboottutorial.model.Flight;
+import edu.prokopchuk.springboottutorial.service.CrewFlightsLinkService;
 import edu.prokopchuk.springboottutorial.service.CrewService;
+import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
+import edu.prokopchuk.springboottutorial.util.ViewUtils;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,14 +36,20 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class CrewController {
 
   private final CrewService crewService;
+  private final FlightService flightService;
+  private final CrewFlightsLinkService crewFlightsLinkService;
   private final FrontendProperties frontendProperties;
   private final CrewMemberValidator crewMemberValidator;
 
   @Autowired
   public CrewController(CrewService crewService,
+                        FlightService flightService,
+                        CrewFlightsLinkService crewFlightsLinkService,
                         FrontendProperties frontendProperties,
                         CrewMemberValidator crewMemberValidator) {
     this.crewService = crewService;
+    this.flightService = flightService;
+    this.crewFlightsLinkService = crewFlightsLinkService;
     this.frontendProperties = frontendProperties;
     this.crewMemberValidator = crewMemberValidator;
   }
@@ -51,25 +59,43 @@ public class CrewController {
                          @RequestParam("page") Optional<Integer> page,
                          @RequestParam("sortby") Optional<String> sortBy) {
     int currentPageNumber = page.orElse(1);
+    int pageSize = frontendProperties.getCrewPageSize();
     String sortByField = sortBy.orElse("passNumber");
 
-    fillPage(modelMap, currentPageNumber, sortByField);
+    Sort sort = Sort.by(sortByField);
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, pageSize, sort);
+
+    Page<CrewMember> content = crewService.getCrewPage(pageable);
+    ViewUtils.fillPageWithTable(modelMap, content, "crew");
 
     return "crew";
   }
 
   @GetMapping("/crew/{pass-number}")
   public String showCrewMember(@PathVariable("pass-number") String passNumber,
-                               ModelMap modelMap) {
-    Optional<CrewMember> crewMember = crewService.getCrewMember(passNumber);
+                               ModelMap modelMap,
+                               @RequestParam("page") Optional<Integer> page,
+                               @RequestParam("sortby") Optional<String> sortBy) {
+    Optional<CrewMember> crewMemberOptional = crewService.getCrewMember(passNumber);
 
-    if (crewMember.isEmpty()) {
+    if (crewMemberOptional.isEmpty()) {
       throw new CrewMemberNotFoundException(
           String.format("Crew member with pass number %s not found", passNumber)
       );
     }
 
-    modelMap.addAttribute("crewMember", crewMember.get());
+    CrewMember crewMember = crewMemberOptional.get();
+    int currentPageNumber = page.orElse(1);
+    int pageSize = frontendProperties.getFlightsOfCrewMemberPageSize();
+    String sortByField = sortBy.orElse("flightNumber");
+
+    Sort sort = Sort.by(sortByField);
+    Pageable pageable = PageRequest.of(currentPageNumber - 1, pageSize, sort);
+
+    Page<Flight> flights = flightService.getFlightsOfCrewMember(crewMember, pageable);
+
+    modelMap.addAttribute("crewMember", crewMemberOptional.get());
+    ViewUtils.fillPageWithTable(modelMap, flights, "flights");
 
     return "crew-member";
   }
@@ -136,22 +162,20 @@ public class CrewController {
     }
   }
 
-  private void fillPage(ModelMap modelMap, int currentPageNumber, String sortByField) {
-    int size = frontendProperties.getCrewPageSize();
-    Sort sort = Sort.by(sortByField);
-    Pageable pageable = PageRequest.of(currentPageNumber - 1, size, sort);
+  @DeleteMapping("/crew/{pass-number}/flights/{flight-number}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteFlightOfCrewMember(@PathVariable("pass-number") String passNumber,
+                                       @PathVariable("flight-number") String flightNumber) {
+    boolean isDeleted = crewFlightsLinkService.unlinkCrewMemberAndFlight(passNumber, flightNumber);
 
-    Page<CrewMember> page = crewService.getCrewPage(pageable);
-    modelMap.addAttribute("crew", page);
-    modelMap.addAttribute("currentPageNumber", currentPageNumber);
-
-    int totalPages = page.getTotalPages();
-
-    if (totalPages > 0) {
-      List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
-          .boxed()
-          .collect(Collectors.toList());
-      modelMap.addAttribute("pageNumbers", pageNumbers);
+    if (!isDeleted) {
+      throw new NoSuchFlightForCrewMemberException(
+          String.format(
+              "Crew member with pass number %s does not have flight with number %s",
+              passNumber,
+              flightNumber
+          )
+      );
     }
   }
 

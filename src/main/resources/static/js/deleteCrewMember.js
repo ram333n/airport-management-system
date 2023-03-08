@@ -1,5 +1,5 @@
 function deleteCrewMember(passNumber) {
-  const answer = confirm("Do you want to delete crew member?")
+  const answer = confirm('Do you want to delete crew member?')
 
   if (!answer) {
     return

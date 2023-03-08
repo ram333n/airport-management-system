@@ -5,8 +5,10 @@ spring:
     password: ${DB_PASSWORD:localdb}
 
   jpa:
+    show-sql: true
     hibernate:
       ddl-auto: update
+
   mvc:
     hiddenmethod:
       filter:

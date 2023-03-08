@@ -14,9 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import edu.prokopchuk.springboottutorial.config.FrontendProperties;
 import edu.prokopchuk.springboottutorial.controller.util.TestUtils;
 import edu.prokopchuk.springboottutorial.model.CrewMember;
+import edu.prokopchuk.springboottutorial.model.Flight;
 import edu.prokopchuk.springboottutorial.model.enums.Position;
+import edu.prokopchuk.springboottutorial.service.CrewFlightsLinkService;
 import edu.prokopchuk.springboottutorial.service.CrewService;
+import edu.prokopchuk.springboottutorial.service.FlightService;
 import edu.prokopchuk.springboottutorial.service.validator.crew.CrewMemberValidator;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -27,6 +31,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +45,12 @@ class CrewControllerTest {
 
   @MockBean
   private CrewService crewService;
+
+  @MockBean
+  private FlightService flightService;
+
+  @MockBean
+  private CrewFlightsLinkService crewFlightsLinkService;
 
   @MockBean
   private CrewMemberValidator crewMemberValidator; //just to satisfy controller creation requirement
@@ -99,7 +110,8 @@ class CrewControllerTest {
     int pageSize = frontendProperties.getCrewPageSize();
     Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("passNumber"));
 
-    Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(crew));
+    Mockito.when(crewService.getCrewPage(pageable))
+        .thenReturn(new PageImpl<>(crew, pageable, crew.size()));
 
     ResultActions resultActions = mockMvc.perform(get("/crew"))
         .andExpect(status().isOk())
@@ -140,7 +152,23 @@ class CrewControllerTest {
         .position(Position.NAVIGATOR)
         .build();
 
+    List<Flight> flights = List.of(
+        Flight.builder()
+            .flightNumber("TESTFLT-1")
+            .departureFrom("Kyiv")
+            .destination("Odesa")
+            .departureTime(LocalDateTime.now().plusHours(1L))
+            .arrivalTime(LocalDateTime.now().plusHours(6L))
+            .build()
+    );
+
+    int pageNumber = 0;
+    int pageSize = frontendProperties.getFlightsOfCrewMemberPageSize();
+    Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("flightNumber"));
+
     Mockito.when(crewService.getCrewMember(passNumber)).thenReturn(Optional.of(crewMember));
+    Mockito.when(flightService.getFlightsOfCrewMember(crewMember, pageable))
+        .thenReturn(new PageImpl<>(flights, pageable, flights.size()));
 
     ResultActions resultActions = mockMvc.perform(get("/crew/{pass-number}", passNumber))
         .andExpect(status().isOk())
@@ -153,6 +181,10 @@ class CrewControllerTest {
     assertTrue(content.contains("Test name"));
     assertTrue(content.contains("Test surname"));
     assertTrue(content.contains(Position.NAVIGATOR.toString()));
+
+    assertTrue(content.contains("TESTFLT-1"));
+    assertTrue(content.contains("Kyiv"));
+    assertTrue(content.contains("Odesa"));
   }
 
   @Test
@@ -306,6 +338,31 @@ class CrewControllerTest {
     Mockito.when(crewService.getCrewPage(pageable)).thenReturn(new PageImpl<>(List.of()));
 
     mockMvc.perform(delete("/crew/{pass-number}", passNumber))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void deleteFlightOfCrewMemberThrowsAnException() throws Exception {
+    String passNumber = "TESTMBR-1";
+    String flightNumber = "TESTFLT-1";
+
+    Mockito.when(crewFlightsLinkService.unlinkCrewMemberAndFlight(passNumber, flightNumber))
+        .thenReturn(false);
+
+    mockMvc.perform(delete("/crew/{pass-number}/flights/{flight-number}", passNumber, flightNumber))
+        .andExpect(status().isNotFound())
+        .andExpect(view().name("no-such-flight-for-crew-member"));
+  }
+
+  @Test
+  void deleteFlightOfCrewMemberWorksProperly() throws Exception {
+    String passNumber = "TESTMBR-1";
+    String flightNumber = "TESTFLT-1";
+
+    Mockito.when(crewFlightsLinkService.unlinkCrewMemberAndFlight(passNumber, flightNumber))
+        .thenReturn(true);
+
+    mockMvc.perform(delete("/crew/{pass-number}/flights/{flight-number}", passNumber, flightNumber))
         .andExpect(status().isNoContent());
   }
 

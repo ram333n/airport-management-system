@@ -1,5 +1,5 @@
 function deleteFlight(flightNumber) {
-  const answer = confirm("Do you want to delete flight?")
+  const answer = confirm('Do you want to delete flight?')
 
   if (!answer) {
     return
